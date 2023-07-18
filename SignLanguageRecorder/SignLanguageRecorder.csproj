@@ -51,6 +51,7 @@
     <ItemGroup>
         <PackageReference Include="Camera.MAUI" Version="1.4.2" />
         <PackageReference Include="CommunityToolkit.Maui" Version="5.1.0" />
+        <PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="2.0.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
         <PackageReference Include="LiteDB" Version="5.0.16" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
@@ -58,6 +59,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <MauiXaml Update="Controls\MediaPlayerPopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
       <MauiXaml Update="Pages\RecordPage.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
