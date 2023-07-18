@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="SignLanguageRecorder.Controls.Recorder"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
+    xmlns:cam="clr-namespace:Camera.MAUI;assembly=Camera.MAUI"
+    xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
+    x:DataType="vm:RecorderViewModel">
+    <AbsoluteLayout Margin="5">
+        <AbsoluteLayout.GestureRecognizers>
+            <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+        </AbsoluteLayout.GestureRecognizers>
+        <cam:CameraView
+            x:Name="CameraView"
+            AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+            AbsoluteLayout.LayoutFlags="All" />
+        <Label
+            x:Name="RecorderNameLabel"
+            AbsoluteLayout.LayoutBounds="0, 0, AutoSize, AutoSize"
+            AbsoluteLayout.LayoutFlags="PositionProportional"
+            FontSize="Medium"
+            IsEnabled="False"
+            Opacity="0"
+            Text="{Binding RecorderName}" />
+        <c:Icon
+            x:Name="SettingButton"
+            Padding="0,0,5,5"
+            AbsoluteLayout.LayoutBounds="1, 0, AutoSize, AutoSize"
+            AbsoluteLayout.LayoutFlags="PositionProportional"
+            IconSize="Small"
+            IsEnabled="False"
+            Opacity="0"
+            Symbol="Cog">
+            <c:Icon.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnSettingButtonTapped" />
+            </c:Icon.GestureRecognizers>
+        </c:Icon>
+    </AbsoluteLayout>
+</ContentView>

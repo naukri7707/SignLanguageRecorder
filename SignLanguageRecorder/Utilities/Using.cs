@@ -1,0 +1,1 @@
+﻿namespace SignLanguageRecorder.Utilities;

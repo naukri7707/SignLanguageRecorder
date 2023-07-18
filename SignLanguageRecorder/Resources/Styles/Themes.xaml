@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <!--  Seed (#3C3D40, #BDBEBF, #232426, #909094)  -->
+    <Color x:Key="ThemeSeed">#3C3D40</Color>
+
+    <!--#region Light-->
+    <Color x:Key="Light_Primary">#1860A5</Color>
+    <Color x:Key="Light_OnPrimary">#FFFFFF</Color>
+    <Color x:Key="Light_PrimaryContainer">#D3E3FF</Color>
+    <Color x:Key="Light_OnPrimaryContainer">#001C39</Color>
+
+    <Color x:Key="Light_Secondary">#00677D</Color>
+    <Color x:Key="Light_OnSecondary">#FFFFFF</Color>
+    <Color x:Key="Light_SecondaryContainer">#B3EBFF</Color>
+    <Color x:Key="Light_OnSecondaryContainer">#001F27</Color>
+
+    <Color x:Key="Light_Tertiary">#0062A1</Color>
+    <Color x:Key="Light_OnTertiary">#FFFFFF</Color>
+    <Color x:Key="Light_TertiaryContainer">#D0E4FF</Color>
+    <Color x:Key="Light_OnTertiaryContainer">#001D35</Color>
+
+    <Color x:Key="Light_Error">#BA1A1A</Color>
+    <Color x:Key="Light_ErrorContainer">#FFDAD6</Color>
+    <Color x:Key="Light_OnError">#FFFFFF</Color>
+    <Color x:Key="Light_OnErrorContainer">#410002</Color>
+
+    <Color x:Key="Light_Background">#FDFCFF</Color>
+    <Color x:Key="Light_OnBackground">#1A1C1E</Color>
+
+    <Color x:Key="Light_Surface">#FFFFFF</Color>
+    <Color x:Key="Light_OnSurface">#616162</Color>
+    <Color x:Key="Light_SurfaceContainer">#E4E5E9</Color>
+    <Color x:Key="Light_OnSurfaceContainer">#6A6A6A</Color>
+    <!--#endregion-->
+    <!--#region Dark-->
+    <Color x:Key="Dark_Primary">#A3C9FF</Color>
+    <Color x:Key="Dark_OnPrimary">#00315C</Color>
+    <Color x:Key="Dark_PrimaryContainer">#004883</Color>
+    <Color x:Key="Dark_OnPrimaryContainer">#D3E3FF</Color>
+
+    <Color x:Key="Dark_Secondary">#59D5F8</Color>
+    <Color x:Key="Dark_OnSecondary">#003642</Color>
+    <Color x:Key="Dark_SecondaryContainer">#004E5F</Color>
+    <Color x:Key="Dark_OnSecondaryContainer">#B3EBFF</Color>
+
+    <Color x:Key="Dark_Tertiary">#9CCAFF</Color>
+    <Color x:Key="Dark_OnTertiary">#003257</Color>
+    <Color x:Key="Dark_TertiaryContainer">#00497B</Color>
+    <Color x:Key="Dark_OnTertiaryContainer">#D0E4FF</Color>
+
+    <Color x:Key="Dark_Error">#FFB4AB</Color>
+    <Color x:Key="Dark_ErrorContainer">#93000A</Color>
+    <Color x:Key="Dark_OnError">#690005</Color>
+    <Color x:Key="Dark_OnErrorContainer">#FFDAD6</Color>
+
+    <Color x:Key="Dark_Background">#2E2F33</Color>
+    <Color x:Key="Dark_OnBackground">#F0F0F0</Color>
+
+    <Color x:Key="Dark_Surface">#2E2F33</Color>
+    <Color x:Key="Dark_OnSurface">#F0F0F0</Color>
+    <Color x:Key="Dark_SurfaceContainer">#202125</Color>
+    <Color x:Key="Dark_OnSurfaceContainer">#FFFFFF</Color>
+
+    <!--#endregion-->
+
+</ResourceDictionary>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SignLanguageRecorder.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:v="clr-namespace:SignLanguageRecorder.Pages"
+    Shell.FlyoutBehavior="Flyout">
+
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate v:RecordPage}"
+        Route="MainPage" />
+    <ShellContent
+        Title="Setting"
+        ContentTemplate="{DataTemplate v:SettingPage}"
+        Route="SettingPage" />
+</Shell>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="SignLanguageRecorder.Pages.RecordPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
+    xmlns:m="clr-namespace:SignLanguageRecorder.Models"
+    xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
+    x:DataType="vm:RecordPageViewModel">
+    <FlexLayout Direction="Row">
+        <!--  Sidebar  -->
+        <VerticalStackLayout FlexLayout.Basis="Auto">
+            <CollectionView
+                x:Name="GestureTaskList"
+                ItemsSource="{Binding GestureTasks}"
+                SelectedItem="{Binding SelectedGestureTask}"
+                SelectionMode="Single">
+                <!--  EmptyView  -->
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="100">
+                        <Image
+                            HeightRequest="160"
+                            HorizontalOptions="Center"
+                            Source="nodata.png"
+                            VerticalOptions="Center"
+                            WidthRequest="160" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+                <!--  ItemsLayout  -->
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+                <!--  ItemTemplate  -->
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="m:SignLanguageInfo">
+                        <Grid
+                            Padding="10"
+                            ColumnDefinitions="auto, 150"
+                            ColumnSpacing="10">
+                            <c:Icon
+                                Grid.Column="0"
+                                IconSize="Small"
+                                Symbol="HandClap" />
+                            <Label Grid.Column="1" Text="{Binding Name}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+        <!--  MainContent  -->
+        <Grid FlexLayout.Grow="1" RowDefinitions="auto,*">
+            <!--  Title & Nav  -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,auto,auto">
+                <Label
+                    Grid.Column="0"
+                    FontSize="Large"
+                    Text="{Binding SelectedItem.Name, Source={x:Reference GestureTaskList}}"
+                    VerticalOptions="Center"
+                    VerticalTextAlignment="Center" />
+                <HorizontalStackLayout
+                    x:Name="Nav"
+                    Grid.Column="1"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center">
+                    <Button
+                        x:Name="RecordButton"
+                        BackgroundColor="{StaticResource Dark_Primary}"
+                        Clicked="RecordButton_Clicked"
+                        Command="{Binding RecordButton_ClickedCommand}"
+                        Text="開始錄製">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="VisibilityStates">
+                                <VisualState Name="Record">
+                                    <VisualState.Setters>
+                                        <Setter Property="Button.Text" Value="開始錄製" />
+                                        <Setter Property="Button.BackgroundColor" Value="{StaticResource Dark_Primary}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState Name="Stop">
+                                    <VisualState.Setters>
+                                        <Setter Property="Button.Text" Value="停止錄製" />
+                                        <Setter Property="Button.BackgroundColor" Value="{StaticResource Dark_Error}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Button>
+                    <Button Text="我的重播" />
+                    <Button Text="觀看示範" />
+                </HorizontalStackLayout>
+                <c:Icon
+                    x:Name="SettingButton"
+                    Grid.Column="2"
+                    HorizontalOptions="End"
+                    IconSize="Medium"
+                    Symbol="Menu"
+                    VerticalOptions="Center">
+                    <c:Icon.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="MenuButton_Tapped" />
+                    </c:Icon.GestureRecognizers>
+                </c:Icon>
+            </Grid>
+            <!--  Recorders  -->
+            <Grid
+                x:Name="RecorderContainer"
+                Grid.Row="1"
+                FlexLayout.Grow="1"
+                SizeChanged="RecorderContainer_SizeChanged" />
+        </Grid>
+    </FlexLayout>
+</ContentPage>

@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="SignLanguageRecorder.Pages.SettingPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
+    xmlns:m="clr-namespace:SignLanguageRecorder.Models"
+    xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
+    Title="Setting"
+    x:DataType="vm:SettingPageViewModel">
+    <VerticalStackLayout>
+        <ScrollView>
+            <CollectionView
+                x:Name="DataGrid"
+                CanReorderItems="True"
+                ItemsSource="{Binding GestureTasks}"
+                SelectionMode="None">
+                <!--  EmptyView  -->
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="100">
+                        <Image
+                            HeightRequest="160"
+                            HorizontalOptions="Center"
+                            Source="nodata.png"
+                            VerticalOptions="Center"
+                            WidthRequest="160" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+                <!--  ItemsLayout  -->
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+                <!--  ItemTemplate  -->
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:SignLanguageTabViewModel">
+                        <Grid
+                            BackgroundColor="{Binding IsChangedBackgroundColor}"
+                            ColumnDefinitions="35, 100, *"
+                            RowDefinitions="35">
+                            <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
+                            <c:BorderlessEntry Grid.Column="1" Text="{Binding Name}" />
+                            <c:BorderlessEntry Grid.Column="2" Text="{Binding DemoVideoSource}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+        <HorizontalStackLayout>
+            <Button Command="{Binding AddNewTaskCommand}" Text="Add Task" />
+            <Button Command="{Binding UpdateChangedTaskCommand}" Text="Update Changed" />
+            <Button
+                x:Name="RemoveSelectButton"
+                BackgroundColor="{StaticResource Dark_Error}"
+                Command="{Binding DeleteSelectedTaskCommand}"
+                Text="Remove Select" />
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>

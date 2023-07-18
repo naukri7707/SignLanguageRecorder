@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tk:Popup
+    x:Class="SignLanguageRecorder.Controls.RecorderSettingsPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
+    xmlns:tk="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
+    x:Name="This"
+    x:DataType="vm:RecorderViewModel"
+    CanBeDismissedByTappingOutsideOfPopup="False"
+    Size="400,200"
+    Color="Transparent">
+    <Border
+        HorizontalOptions="Center"
+        Stroke="{StaticResource Dark_SurfaceContainer}"
+        StrokeShape="RoundRectangle 10,10,10,10">
+        <Grid
+            Padding="10"
+            BackgroundColor="{StaticResource Dark_Surface}"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="5"
+            RowDefinitions="auto,auto,auto,auto"
+            RowSpacing="5">
+            <Label
+                Grid.Row="0"
+                Grid.Column="0"
+                FontSize="16"
+                Text="名稱"
+                VerticalOptions="Center"
+                VerticalTextAlignment="Center" />
+            <Entry
+                x:Name="RecorderNameEntry"
+                Grid.Row="0"
+                Grid.Column="1"
+                HorizontalOptions="End"
+                VerticalOptions="Center"
+                WidthRequest="250" />
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                FontSize="16"
+                Text="攝影機"
+                VerticalOptions="Center"
+                VerticalTextAlignment="Center" />
+            <Picker
+                x:Name="CameraPicker"
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalOptions="End"
+                ItemsSource="{Binding CameraNameOptions}"
+                VerticalOptions="Center"
+                WidthRequest="250" />
+            <Label
+                Grid.Row="2"
+                Grid.Column="0"
+                FontSize="16"
+                Text="麥克風"
+                VerticalOptions="Center"
+                VerticalTextAlignment="Center" />
+            <Picker
+                x:Name="MicrophonePicker"
+                Grid.Row="2"
+                Grid.Column="1"
+                HorizontalOptions="End"
+                ItemsSource="{Binding MicrophoneNameOptions}"
+                VerticalOptions="Center"
+                WidthRequest="250" />
+            <Button
+                Grid.Row="3"
+                Grid.Column="0"
+                BackgroundColor="{StaticResource Dark_PrimaryContainer}"
+                Clicked="SaveAndClose"
+                FontSize="16"
+                Text="確認"
+                TextColor="{StaticResource Dark_Primary}"
+                VerticalOptions="Center" />
+            <Button
+                Grid.Row="3"
+                Grid.Column="1"
+                BackgroundColor="{StaticResource Dark_SecondaryContainer}"
+                Clicked="Close"
+                FontSize="16"
+                Text="取消"
+                TextColor="{StaticResource Dark_Secondary}"
+                VerticalOptions="Center" />
+        </Grid>
+    </Border>
+</tk:Popup>
