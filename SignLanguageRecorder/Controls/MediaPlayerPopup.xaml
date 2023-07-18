@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<tk:Popup
+    x:Class="SignLanguageRecorder.Controls.MediaPlayerPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
+    xmlns:tk="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
+    x:DataType="vm:MediaPlayerPopupViewModel"
+    CanBeDismissedByTappingOutsideOfPopup="True"
+    Size="800,600">
+    <VerticalStackLayout>
+        <Label FontSize="Title" Text="Title" />
+        <Picker x:Name="SourcePicker">
+            <Picker.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                    <x:String>Item 3</x:String>
+                </x:Array>
+            </Picker.ItemsSource>
+        </Picker>
+        <AbsoluteLayout
+            Margin="10"
+            HeightRequest="400"
+            WidthRequest="600">
+            <tk:MediaElement
+                x:Name="MediaPlayer"
+                AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+                AbsoluteLayout.LayoutFlags="All"
+                ShouldAutoPlay="True"
+                ShouldLoopPlayback="True"
+                ShouldShowPlaybackControls="False"
+                Source="C:\Users\Naukri\Desktop\bandicam 2023-07-17 12-12-40-735.mp4">
+                <tk:MediaElement.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="MediaPlayer_Tapped" />
+                    <PointerGestureRecognizer PointerExited="MediaPlayer_PointerExited" PointerMoved="MediaPlayer_PointerMoved" />
+                </tk:MediaElement.GestureRecognizers>
+            </tk:MediaElement>
+            <c:Icon
+                x:Name="ActionIcon"
+                AbsoluteLayout.LayoutBounds="0.5, 0.5, -1, -1"
+                AbsoluteLayout.LayoutFlags="PositionProportional"
+                IconColor="#AA000000"
+                IconSize="Huge"
+                Opacity="0"
+                Symbol="PlayCircle">
+                <!--  讓 Icon 本身也能點擊  -->
+                <c:Icon.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="MediaPlayer_Tapped" />
+                </c:Icon.GestureRecognizers>
+            </c:Icon>
+        </AbsoluteLayout>
+    </VerticalStackLayout>
+</tk:Popup>
