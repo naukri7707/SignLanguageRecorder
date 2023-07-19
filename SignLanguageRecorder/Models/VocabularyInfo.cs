@@ -10,11 +10,9 @@ public class VocabularyInfo
 
     public string Phonetic { get; set; }
 
-    public int BookId { get; set; }
-
     public bool IsRecognizable { get; set; }
 
     public bool IsVocabulary { get; set; }
 
-    public string[] DemoVideoRelativePaths { get; set; }
+    public SignInfo[] Signs { get; set; }
 }
