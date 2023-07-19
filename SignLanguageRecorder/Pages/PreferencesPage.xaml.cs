@@ -1,4 +1,4 @@
-namespace SignLanguageRecorder.Pages;
+﻿namespace SignLanguageRecorder.Pages;
 
 public partial class PreferencesPage : ContentPage,
     IWithViewModel<PreferencesPageViewModel>,
@@ -12,5 +12,8 @@ public partial class PreferencesPage : ContentPage,
         BindingContext = new PreferencesPageViewModel(this);
     }
 
-    Entry PreferencesPageViewModel.IRequirement.DataFolderEntry => DataFolderEntry;
+    Entry PreferencesPageViewModel.IRequirement.UserNameEntry => UserNameEntry;
+    Entry PreferencesPageViewModel.IRequirement.UserFolderEntry => UserFolderEntry;
+    Entry PreferencesPageViewModel.IRequirement.DemoFolderEntry => DemoFolderEntry;
+    Entry PreferencesPageViewModel.IRequirement.PythonFolderEntry => PythonFolderEntry;
 }

@@ -1,4 +1,4 @@
-using Camera.MAUI;
+﻿using Camera.MAUI;
 using CommunityToolkit.Maui.Views;
 
 namespace SignLanguageRecorder.Controls; public partial class Recorder : ContentView,
@@ -52,18 +52,6 @@ namespace SignLanguageRecorder.Controls; public partial class Recorder : Content
         {
             ViewModel.SetInfo(info);
         }
-    }
-
-    public async void StartRecord()
-    {
-        var cameraView = CameraView;
-        await ViewModel.StartRecordAsync(cameraView);
-    }
-
-    public async void StopRecord()
-    {
-        var cameraView = CameraView;
-        await ViewModel.StopRecordAsync(cameraView);
     }
 
     CameraView RecorderViewModel.IRequirement.CameraView => CameraView;

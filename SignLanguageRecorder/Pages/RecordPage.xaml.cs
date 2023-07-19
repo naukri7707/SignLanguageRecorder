@@ -14,7 +14,6 @@ public partial class RecordPage : ContentPage,
     public RecordPage()
     {
         InitializeComponent();
-        BindingContext = new RecordPageViewModel(this);
 
         var recorders = new Recorder[16];
 
@@ -29,6 +28,8 @@ public partial class RecordPage : ContentPage,
             recorders[i] = recorder;
         }
         this.recorders = recorders;
+        // 最後建立 ViewModel 避免 ViewModel 在建構子中使用 IRequirement 時目標未建立。
+        BindingContext = new RecordPageViewModel(this);
     }
 
     protected override void OnAppearing()
