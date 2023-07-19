@@ -1,4 +1,6 @@
-﻿namespace SignLanguageRecorder.ViewModels;
+﻿using System.ComponentModel;
+
+namespace SignLanguageRecorder.ViewModels;
 
 public partial class RecordPageViewModel : ObservableObject
 {
@@ -25,6 +27,9 @@ public partial class RecordPageViewModel : ObservableObject
     [ObservableProperty]
     private VocabularyInfo selectedVocabularyInfo;
 
+    [ObservableProperty]
+    private int selectedVocabularySignIndex = -1;
+
     public RecordPageViewModel(IRequirement requirement) : this(
         requirement,
         Dependency.Inject<DatabaseService>(),
@@ -39,7 +44,7 @@ public partial class RecordPageViewModel : ObservableObject
         this.recorderLayoutService = recorderLayoutService;
     }
 
-    public async void UpdateGestureTasks()
+    public async void UpdateVocabularies(Action onUpdated = null)
     {
         await Task.Yield();
         lock (databaseService)
@@ -53,6 +58,18 @@ public partial class RecordPageViewModel : ObservableObject
             {
                 VocabularyInfos.Add(task);
             }
+
+            onUpdated?.Invoke();
+        }
+    }
+
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+
+        if (e.PropertyName == nameof(SelectedVocabularyInfo))
+        {
+           SelectedVocabularySignIndex = 0;
         }
     }
 
@@ -76,6 +93,7 @@ public partial class RecordPageViewModel : ObservableObject
                 recorder.StartRecord();
             }
         }
+        IsRecording = !IsRecording;
     }
 
     public bool TrySetCamCount(int camCount)

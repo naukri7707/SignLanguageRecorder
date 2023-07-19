@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui.Views;
+using System.Runtime.CompilerServices;
 
 namespace SignLanguageRecorder.Pages;
 
@@ -33,7 +34,22 @@ public partial class RecordPage : ContentPage,
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        ViewModel.UpdateGestureTasks();
+        ViewModel.UpdateVocabularies(() =>
+        {
+            if (ViewModel.SelectedVocabularyInfo == null)
+            {
+                ViewModel.SelectedVocabularyInfo = ViewModel.VocabularyInfos.FirstOrDefault();
+            }
+        });
+    }
+
+    private async void WatchDemoButton_Clicked(object sender, EventArgs e)
+    {
+        var demoPopup = new MediaPlayerPopup();
+        var index = ViewModel.SelectedVocabularySignIndex;
+        var videoName = ViewModel.SelectedVocabularyInfo.GetVideoName(index);
+        demoPopup.ViewModel.LoadDemo(videoName);
+        var result = await this.ShowPopupAsync(demoPopup);
     }
 
     private void RecorderContainer_SizeChanged(object sender, EventArgs e)
@@ -104,7 +120,7 @@ public partial class RecordPage : ContentPage,
                 // 沒有取消時
                 if (targetDeleteLayout != null)
                 {
-                    if(ViewModel.DeleteLayout(targetDeleteLayout))
+                    if (ViewModel.DeleteLayout(targetDeleteLayout))
                     {
                         await DisplayAlert("完成", $"{targetDeleteLayout} 已", "確定");
                     }
@@ -117,20 +133,6 @@ public partial class RecordPage : ContentPage,
                 break;
         }
     }
-
-    private void RecordButton_Clicked(object sender, EventArgs e)
-    {
-        var button = (Button)sender;
-        if (button.Text == "開始錄製")
-        {
-            VisualStateManager.GoToState(button, "Stop");
-        }
-        else if (button.Text == "停止錄製")
-        {
-            VisualStateManager.GoToState(button, "Record");
-        }
-    }
-
 
     private int CalculateColumnCount(int camCount)
     {
@@ -236,10 +238,4 @@ public partial class RecordPage : ContentPage,
     Grid RecordPageViewModel.IRequirement.RecorderContainer => RecorderContainer;
 
     Recorder[] RecordPageViewModel.IRequirement.Recorders => recorders;
-
-    private async void WatchDemoButton_Clicked(object sender, EventArgs e)
-    {
-        var demoPopup = new MediaPlayerPopup();
-        var result = await this.ShowPopupAsync(demoPopup);
-    }
 }
