@@ -9,7 +9,7 @@ public partial class PreferencesPageViewModel : ObservableObject
     public interface IRequirement
     {
         Entry UserNameEntry { get; }
-        Entry UserFolderEntry { get; }
+        Entry UsersFolderEntry { get; }
         Entry DemoFolderEntry { get; }
         Entry PythonFolderEntry { get; }
     }
@@ -30,7 +30,7 @@ public partial class PreferencesPageViewModel : ObservableObject
         this.preferencesService = preferencesService;
         //
         requirement.UserNameEntry.Text = preferencesService.UserName;
-        requirement.UserFolderEntry.Text = preferencesService.UserFolder;
+        requirement.UsersFolderEntry.Text = preferencesService.UsersFolder;
         requirement.DemoFolderEntry.Text = preferencesService.DemoFolder;
         requirement.PythonFolderEntry.Text = preferencesService.PythonFolder;
     }
@@ -57,7 +57,7 @@ public partial class PreferencesPageViewModel : ObservableObject
     public void Save()
     {
         preferencesService.UserName = requirement.UserNameEntry.Text;
-        preferencesService.UserFolder = requirement.UserFolderEntry.Text;
+        preferencesService.UsersFolder = requirement.UsersFolderEntry.Text;
         preferencesService.DemoFolder = requirement.DemoFolderEntry.Text;
         preferencesService.PythonFolder = requirement.PythonFolderEntry.Text;
         Application.Current.MainPage.DisplayAlert("完成", $"偏好設定已儲存", "OK");

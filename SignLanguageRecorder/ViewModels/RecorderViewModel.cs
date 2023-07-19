@@ -74,10 +74,10 @@ public partial class RecorderViewModel : ObservableObject
             return CameraResult.NoMicrophoneSelected;
         }
 
-        var userFolder = preferencesService.UserFolder;
+        var userFolder = preferencesService.UsersFolder;
         var userName = preferencesService.UserName;
 
-        var folderPath = Path.Combine(userFolder, userName, RecorderName);
+        var folderPath = Path.Combine(userFolder, userName, "Source", RecorderName);
 
         if (!Directory.Exists(folderPath))
         {

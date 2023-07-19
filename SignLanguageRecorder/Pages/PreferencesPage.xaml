@@ -23,16 +23,16 @@
         <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
             <Label
                 Grid.Column="0"
-                Text="User Folder"
+                Text="Users Folder"
                 VerticalTextAlignment="Center" />
             <Grid Grid.Column="1" ColumnDefinitions="*,auto">
                 <Entry
-                    x:Name="UserFolderEntry"
+                    x:Name="UsersFolderEntry"
                     Grid.Column="0"
                     HorizontalOptions="FillAndExpand" />
                 <c:Icon Grid.Column="1" Symbol="FolderOpen">
                     <c:Icon.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding OpenFolderPickerCommand}" CommandParameter="{Binding ., Source={x:Reference UserFolderEntry}}" />
+                        <TapGestureRecognizer Command="{Binding OpenFolderPickerCommand}" CommandParameter="{Binding ., Source={x:Reference UsersFolderEntry}}" />
                     </c:Icon.GestureRecognizers>
                 </c:Icon>
             </Grid>
