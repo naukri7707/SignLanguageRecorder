@@ -15,10 +15,10 @@ public class PreferencesService
         set => Preferences.Set(nameof(DemoFolder), value);
     }
 
-    public string UserFolder
+    public string UsersFolder
     {
-        get => Preferences.Get(nameof(UserFolder), "");
-        set => Preferences.Set(nameof(UserFolder), value);
+        get => Preferences.Get(nameof(UsersFolder), "");
+        set => Preferences.Set(nameof(UsersFolder), value);
     }
 
     public string PythonFolder
@@ -26,6 +26,8 @@ public class PreferencesService
         get => Preferences.Get(nameof(PythonFolder), "");
         set => Preferences.Set(nameof(PythonFolder), value);
     }
+
+    public string UserFolder => Path.Combine(UsersFolder, UserName);
 
     public PreferencesService()
 	{

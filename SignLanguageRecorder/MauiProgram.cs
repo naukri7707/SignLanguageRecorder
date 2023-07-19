@@ -23,14 +23,16 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-        builder.Services.AddSingleton<PreferencesService>();
-
+        // Data
         builder.Services.AddTransient<SecureStorageService>();
+        builder.Services.AddSingleton<PreferencesService>();
         builder.Services.AddSingleton<DatabaseService>();
-
-        builder.Services.AddTransient<PythonService>();
         builder.Services.AddTransient<RecorderLayoutService>();
         builder.Services.AddTransient<VocabularyService>();
+        // Python
+        builder.Services.AddSingleton<PythonService>();
+        builder.Services.AddSingleton<JointsRecognizerService>();
+
         var app = builder.Build();
 
         return app;

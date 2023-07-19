@@ -13,7 +13,7 @@ public partial class PreferencesPage : ContentPage,
     }
 
     Entry PreferencesPageViewModel.IRequirement.UserNameEntry => UserNameEntry;
-    Entry PreferencesPageViewModel.IRequirement.UserFolderEntry => UserFolderEntry;
+    Entry PreferencesPageViewModel.IRequirement.UsersFolderEntry => UsersFolderEntry;
     Entry PreferencesPageViewModel.IRequirement.DemoFolderEntry => DemoFolderEntry;
     Entry PreferencesPageViewModel.IRequirement.PythonFolderEntry => PythonFolderEntry;
 }

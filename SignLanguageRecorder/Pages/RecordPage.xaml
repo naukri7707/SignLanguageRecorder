@@ -103,7 +103,10 @@
                             </DataTrigger>
                         </Button.Triggers>
                     </Button>
-                    <Button Text="我的重播" />
+                    <Button
+                        x:Name="WatchReplayButton"
+                        Clicked="WatchReplayButton_Clicked"
+                        Text="我的重播" />
                     <Button
                         x:Name="WatchDemoButton"
                         Clicked="WatchDemoButton_Clicked"
