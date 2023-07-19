@@ -42,6 +42,15 @@ public partial class RecordPageViewModel : ObservableObject
         this.requirement = requirement;
         this.databaseService = databaseService;
         this.recorderLayoutService = recorderLayoutService;
+        //
+        for (int i = 0; i < requirement.Recorders.Length; i++)
+        {
+            var recorder = requirement.Recorders[i];
+            if(string.IsNullOrEmpty(recorder.ViewModel.RecorderName))
+            {
+                recorder.ViewModel.RecorderName = $"Cam {i}";
+            }
+        }
     }
 
     public async void UpdateVocabularies(Action onUpdated = null)
