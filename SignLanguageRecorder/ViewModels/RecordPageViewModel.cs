@@ -87,19 +87,19 @@ public partial class RecordPageViewModel : ObservableObject
     {
         await Task.Yield();
         var recorders = requirement.Recorders;
-        var vocabularyName = SelectedVocabularyInfo.Name;
         for (int i = 0; i < CamCount; i++)
         {
             var recorder = recorders[i];
-            var fileName = $"{vocabularyName}_{recorder.ViewModel.RecorderName}";
 
             if (IsRecording)
             {
-                recorder.StopRecord();
+                _ = recorder.ViewModel.StopRecordAsync();
             }
             else
             {
-                recorder.StartRecord();
+                var signIndex = SelectedVocabularySignIndex;
+                var videoName = SelectedVocabularyInfo.GetVideoName(signIndex);
+                _ = recorder.ViewModel.StartRecordAsync(videoName);
             }
         }
         IsRecording = !IsRecording;
