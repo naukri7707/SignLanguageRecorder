@@ -1,4 +1,4 @@
-using Camera.MAUI;
+﻿using Camera.MAUI;
 
 namespace SignLanguageRecorder.ViewModels;
 
@@ -9,12 +9,15 @@ public partial class RecorderViewModel : ObservableObject
         public CameraView CameraView { get; }
     }
 
-    private readonly IRequirement requirement;
-
     private const string DISABLED = "Disabled";
+
     private const string UNKNOW = "Unknow";
 
-    private const string DISABLED_NAME = "����";
+    private const string DISABLED_NAME = "關閉";
+
+    private readonly IRequirement requirement;
+
+    private readonly PreferencesService preferencesService;
 
     [ObservableProperty]
     private string recorderName;
@@ -27,9 +30,16 @@ public partial class RecorderViewModel : ObservableObject
 
     public string[] MicrophoneNameOptions => new[] { DISABLED_NAME }.Concat(requirement.CameraView.Microphones.Select(it => it.Name)).ToArray();
 
-    public RecorderViewModel(IRequirement requirement)
+    public RecorderViewModel(IRequirement requirement) : this(
+        requirement,
+        Dependency.Inject<PreferencesService>()
+        )
+    { }
+
+    public RecorderViewModel(IRequirement requirement, PreferencesService preferencesService)
     {
         this.requirement = requirement;
+        this.preferencesService = preferencesService;
     }
 
     public void EnableQRCodeScanner(CameraView cameraView)
@@ -48,17 +58,41 @@ public partial class RecorderViewModel : ObservableObject
         cameraView.BarCodeDetectionEnabled = true;
     }
 
-    public async Task<CameraResult> StartRecordAsync(CameraView cameraView)
+    public async Task<CameraResult> StartRecordAsync(string videoName)
     {
-        var fullFileName = $"{RecorderName}_{DateTime.Now:hhmmss}.mp4";
-        cameraView.Camera ??= cameraView.Cameras.First();
-        cameraView.Microphone ??= cameraView.Microphones.First();
-        var filePath = Path.Combine(FileSystem.Current.CacheDirectory, fullFileName);
-        return await cameraView.StartRecordingAsync(filePath);
+        var cameraView = requirement.CameraView;
+        // Todo 用專用的 Service 繪製
+        if (cameraView.Camera == null)
+        {
+            await Application.Current.MainPage.DisplayAlert("錯誤", $"{RecorderName}沒有指定攝影機", "OK");
+            return CameraResult.NoCameraSelected;
+        }
+
+        if (cameraView.Microphone == null)
+        {
+            await Application.Current.MainPage.DisplayAlert("錯誤", $"{RecorderName}沒有指定麥克風", "OK");
+            return CameraResult.NoMicrophoneSelected;
+        }
+
+        var userFolder = preferencesService.UsersFolder;
+        var userName = preferencesService.UserName;
+
+        var folderPath = Path.Combine(userFolder, userName, "Source", RecorderName);
+
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+        }
+
+        var filePath = Path.Combine(folderPath, $"{videoName}.mp4");
+
+        var result = await cameraView.StartRecordingAsync(filePath);
+        return result;
     }
 
-    public async Task<CameraResult> StopRecordAsync(CameraView cameraView)
+    public async Task<CameraResult> StopRecordAsync()
     {
+        var cameraView = requirement.CameraView;
         return await cameraView.StopRecordingAsync();
     }
 
@@ -69,7 +103,7 @@ public partial class RecorderViewModel : ObservableObject
 
     public void SetInfo(RecorderInfo info)
     {
-        // Todo �S�����˸m��ĵ�i
+        // Todo 沒有找到裝置時警告
         RecorderName = info.Name;
         SelectedCameraId = info.CameraId;
         SelectedMicrophoneId = info.MicrophoneId;
@@ -81,6 +115,7 @@ public partial class RecorderViewModel : ObservableObject
         var cameraView = requirement.CameraView;
 
         cameraView.Camera = cameraView.Cameras.FirstOrDefault(it => it.DeviceId == SelectedCameraId);
+        cameraView.Microphone = cameraView.Microphones.FirstOrDefault(it => it.DeviceId == SelectedMicrophoneId);
         MainThread.BeginInvokeOnMainThread(async () =>
         {
             // stop camera to fix samsung devices bug

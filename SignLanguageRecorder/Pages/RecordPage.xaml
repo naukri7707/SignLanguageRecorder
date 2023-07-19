@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="SignLanguageRecorder.Pages.RecordPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -6,15 +6,17 @@
     xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
     xmlns:m="clr-namespace:SignLanguageRecorder.Models"
     xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
+    Title="RecordPage"
     x:DataType="vm:RecordPageViewModel">
     <FlexLayout Direction="Row">
         <!--  Sidebar  -->
-        <VerticalStackLayout FlexLayout.Basis="Auto">
+        <Grid FlexLayout.Basis="Auto">
             <CollectionView
-                x:Name="GestureTaskList"
-                ItemsSource="{Binding GestureTasks}"
-                SelectedItem="{Binding SelectedGestureTask}"
-                SelectionMode="Single">
+                x:Name="VocabulariesView"
+                ItemsSource="{Binding VocabularyInfos}"
+                SelectedItem="{Binding SelectedVocabularyInfo}"
+                SelectionMode="Single"
+                VerticalScrollBarVisibility="Always">
                 <!--  EmptyView  -->
                 <CollectionView.EmptyView>
                     <StackLayout Padding="100">
@@ -32,7 +34,7 @@
                 </CollectionView.ItemsLayout>
                 <!--  ItemTemplate  -->
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="m:SignLanguageInfo">
+                    <DataTemplate x:DataType="m:VocabularyInfo">
                         <Grid
                             Padding="10"
                             ColumnDefinitions="auto, 150"
@@ -40,57 +42,79 @@
                             <c:Icon
                                 Grid.Column="0"
                                 IconSize="Small"
-                                Symbol="HandClap" />
-                            <Label Grid.Column="1" Text="{Binding Name}" />
+                                Symbol="CircleMedium" />
+                            <HorizontalStackLayout Grid.Column="1">
+                                <Label Text="{Binding Name}" />
+                                <Label
+                                    Margin="5,0,0,0"
+                                    Text="{Binding ProgressText}"
+                                    TextColor="Gray" />
+                            </HorizontalStackLayout>
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </VerticalStackLayout>
+        </Grid>
         <!--  MainContent  -->
         <Grid FlexLayout.Grow="1" RowDefinitions="auto,*">
             <!--  Title & Nav  -->
-            <Grid Grid.Row="0" ColumnDefinitions="*,auto,auto">
+            <Grid Grid.Row="0" ColumnDefinitions="auto,*,auto,auto">
                 <Label
                     Grid.Column="0"
                     FontSize="Large"
-                    Text="{Binding SelectedItem.Name, Source={x:Reference GestureTaskList}}"
+                    Text="{Binding SelectedVocabularyInfo.Name}"
+                    VerticalOptions="Center"
+                    VerticalTextAlignment="Center" />
+                <Picker
+                    x:Name="SignPicker"
+                    Grid.Column="1"
+                    Margin="10,0,0,0"
+                    HorizontalOptions="Start"
+                    IsEnabled="{Binding SelectedVocabularyInfo.MultiSign}"
+                    IsVisible="{Binding SelectedVocabularyInfo.MultiSign}"
+                    ItemsSource="{Binding SelectedVocabularyInfo.Signs}"
+                    SelectedIndex="{Binding SelectedVocabularySignIndex}"
                     VerticalOptions="Center"
                     VerticalTextAlignment="Center" />
                 <HorizontalStackLayout
                     x:Name="Nav"
-                    Grid.Column="1"
+                    Grid.Column="2"
                     HorizontalOptions="End"
                     VerticalOptions="Center">
                     <Button
                         x:Name="RecordButton"
                         BackgroundColor="{StaticResource Dark_Primary}"
-                        Clicked="RecordButton_Clicked"
                         Command="{Binding RecordButton_ClickedCommand}"
                         Text="開始錄製">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup Name="VisibilityStates">
-                                <VisualState Name="Record">
-                                    <VisualState.Setters>
-                                        <Setter Property="Button.Text" Value="開始錄製" />
-                                        <Setter Property="Button.BackgroundColor" Value="{StaticResource Dark_Primary}" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState Name="Stop">
-                                    <VisualState.Setters>
-                                        <Setter Property="Button.Text" Value="停止錄製" />
-                                        <Setter Property="Button.BackgroundColor" Value="{StaticResource Dark_Error}" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
+                        <Button.Triggers>
+                            <DataTrigger
+                                Binding="{Binding IsRecording}"
+                                TargetType="Button"
+                                Value="true">
+                                <Setter Property="Button.Text" Value="停止錄製" />
+                                <Setter Property="Button.BackgroundColor" Value="{StaticResource Dark_Error}" />
+                            </DataTrigger>
+                            <DataTrigger
+                                Binding="{Binding IsRecording}"
+                                TargetType="Button"
+                                Value="false">
+                                <Setter Property="Button.Text" Value="開始錄製" />
+                                <Setter Property="Button.BackgroundColor" Value="{StaticResource Dark_Primary}" />
+                            </DataTrigger>
+                        </Button.Triggers>
                     </Button>
-                    <Button Text="我的重播" />
-                    <Button Text="觀看示範" />
+                    <Button
+                        x:Name="WatchReplayButton"
+                        Clicked="WatchReplayButton_Clicked"
+                        Text="我的重播" />
+                    <Button
+                        x:Name="WatchDemoButton"
+                        Clicked="WatchDemoButton_Clicked"
+                        Text="觀看示範" />
                 </HorizontalStackLayout>
                 <c:Icon
                     x:Name="SettingButton"
-                    Grid.Column="2"
+                    Grid.Column="3"
                     HorizontalOptions="End"
                     IconSize="Medium"
                     Symbol="Menu"

@@ -1,4 +1,6 @@
-﻿namespace SignLanguageRecorder.ViewModels;
+﻿using System.ComponentModel;
+
+namespace SignLanguageRecorder.ViewModels;
 
 public partial class RecordPageViewModel : ObservableObject
 {
@@ -20,10 +22,13 @@ public partial class RecordPageViewModel : ObservableObject
 
     public int CamCount { get; private set; } = 1;
 
-    public ObservableCollection<SignLanguageInfo> GestureTasks { get; } = new();
+    public ObservableCollection<VocabularyInfo> VocabularyInfos { get; } = new();
 
     [ObservableProperty]
-    private SignLanguageInfo selectedGestureTask;
+    private VocabularyInfo selectedVocabularyInfo;
+
+    [ObservableProperty]
+    private int selectedVocabularySignIndex = -1;
 
     public RecordPageViewModel(IRequirement requirement) : this(
         requirement,
@@ -37,22 +42,43 @@ public partial class RecordPageViewModel : ObservableObject
         this.requirement = requirement;
         this.databaseService = databaseService;
         this.recorderLayoutService = recorderLayoutService;
+        //
+        for (int i = 0; i < requirement.Recorders.Length; i++)
+        {
+            var recorder = requirement.Recorders[i];
+            if(string.IsNullOrEmpty(recorder.ViewModel.RecorderName))
+            {
+                recorder.ViewModel.RecorderName = $"Cam {i}";
+            }
+        }
     }
 
-    public async void UpdateGestureTasks()
+    public async void UpdateVocabularies(Action onUpdated = null)
     {
         await Task.Yield();
         lock (databaseService)
         {
             using var db = databaseService.GetLiteDatabase();
-            var collection = db.GetCollection<SignLanguageInfo>();
+            var collection = db.GetCollection<VocabularyInfo>();
 
-            GestureTasks.Clear();
+            VocabularyInfos.Clear();
 
             foreach (var task in collection.FindAll())
             {
-                GestureTasks.Add(task);
+                VocabularyInfos.Add(task);
             }
+
+            onUpdated?.Invoke();
+        }
+    }
+
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+
+        if (e.PropertyName == nameof(SelectedVocabularyInfo))
+        {
+           SelectedVocabularySignIndex = 0;
         }
     }
 
@@ -61,21 +87,22 @@ public partial class RecordPageViewModel : ObservableObject
     {
         await Task.Yield();
         var recorders = requirement.Recorders;
-        var taskName = SelectedGestureTask.Name;
         for (int i = 0; i < CamCount; i++)
         {
             var recorder = recorders[i];
-            var fileName = $"{taskName}_{recorder.ViewModel.RecorderName}";
 
             if (IsRecording)
             {
-                recorder.StopRecord();
+                _ = recorder.ViewModel.StopRecordAsync();
             }
             else
             {
-                recorder.StartRecord();
+                var signIndex = SelectedVocabularySignIndex;
+                var videoName = SelectedVocabularyInfo.GetVideoName(signIndex);
+                _ = recorder.ViewModel.StartRecordAsync(videoName);
             }
         }
+        IsRecording = !IsRecording;
     }
 
     public bool TrySetCamCount(int camCount)

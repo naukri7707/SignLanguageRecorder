@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="SignLanguageRecorder.Pages.PreferencesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
+    xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
+    Title="PreferencesPage"
+    x:DataType="vm:PreferencesPageViewModel">
+    <VerticalStackLayout>
+        <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
+            <Label
+                Grid.Column="0"
+                Text="User Name"
+                VerticalTextAlignment="Center" />
+            <Grid Grid.Column="1" ColumnDefinitions="*,auto">
+                <Entry
+                    x:Name="UserNameEntry"
+                    Grid.Column="0"
+                    HorizontalOptions="FillAndExpand" />
+            </Grid>
+        </Grid>
+        <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
+            <Label
+                Grid.Column="0"
+                Text="Users Folder"
+                VerticalTextAlignment="Center" />
+            <Grid Grid.Column="1" ColumnDefinitions="*,auto">
+                <Entry
+                    x:Name="UsersFolderEntry"
+                    Grid.Column="0"
+                    HorizontalOptions="FillAndExpand" />
+                <c:Icon Grid.Column="1" Symbol="FolderOpen">
+                    <c:Icon.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenFolderPickerCommand}" CommandParameter="{Binding ., Source={x:Reference UsersFolderEntry}}" />
+                    </c:Icon.GestureRecognizers>
+                </c:Icon>
+            </Grid>
+        </Grid>
+        <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
+            <Label
+                Grid.Column="0"
+                Text="Demo Folder"
+                VerticalTextAlignment="Center" />
+            <Grid Grid.Column="1" ColumnDefinitions="*,auto">
+                <Entry
+                    x:Name="DemoFolderEntry"
+                    Grid.Column="0"
+                    HorizontalOptions="FillAndExpand" />
+                <c:Icon Grid.Column="1" Symbol="FolderOpen">
+                    <c:Icon.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenFolderPickerCommand}" CommandParameter="{Binding ., Source={x:Reference DemoFolderEntry}}" />
+                    </c:Icon.GestureRecognizers>
+                </c:Icon>
+            </Grid>
+        </Grid>
+        <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
+            <Label
+                Grid.Column="0"
+                Text="Demo Folder"
+                VerticalTextAlignment="Center" />
+            <Grid Grid.Column="1" ColumnDefinitions="*,auto">
+                <Entry
+                    x:Name="PythonFolderEntry"
+                    Grid.Column="0"
+                    HorizontalOptions="FillAndExpand" />
+                <c:Icon Grid.Column="1" Symbol="FolderOpen">
+                    <c:Icon.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenFolderPickerCommand}" CommandParameter="{Binding ., Source={x:Reference PythonFolderEntry}}" />
+                    </c:Icon.GestureRecognizers>
+                </c:Icon>
+            </Grid>
+        </Grid>
+        <HorizontalStackLayout>
+            <Button
+                BackgroundColor="Red"
+                Command="{Binding ResetCommand}"
+                Text="Reset" />
+            <Button Command="{Binding SaveCommand}" Text="Save" />
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>

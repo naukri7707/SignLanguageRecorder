@@ -4,12 +4,15 @@ namespace SignLanguageRecorder.Services
 {
     public class PythonService : IDisposable
     {
-        public PythonService()
+        private readonly PreferencesService preferencesService;
+
+        public PythonService(PreferencesService preferencesService)
         {
-            string pythonDll = @"..\..\Python311\python311.dll";
+            var pythonDll = Path.Combine(preferencesService.PythonFolder, "Python311", "python311.dll");
 
             Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", pythonDll, EnvironmentVariableTarget.Process);
             PythonEngine.Initialize();
+            this.preferencesService = preferencesService;
         }
 
         public PyModule CreateScope(string scopeName, string scriptFile, out PyDict members)
@@ -26,6 +29,7 @@ namespace SignLanguageRecorder.Services
         public void Dispose()
         {
             PythonEngine.Shutdown();
+            GC.SuppressFinalize(this);
         }
     }
 }

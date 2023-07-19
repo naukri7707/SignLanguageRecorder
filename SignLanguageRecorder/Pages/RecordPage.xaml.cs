@@ -1,4 +1,7 @@
-﻿namespace SignLanguageRecorder.Pages;
+﻿using CommunityToolkit.Maui.Views;
+using System.Runtime.CompilerServices;
+
+namespace SignLanguageRecorder.Pages;
 
 public partial class RecordPage : ContentPage,
     IWithViewModel<RecordPageViewModel>,
@@ -11,7 +14,6 @@ public partial class RecordPage : ContentPage,
     public RecordPage()
     {
         InitializeComponent();
-        BindingContext = new RecordPageViewModel(this);
 
         var recorders = new Recorder[16];
 
@@ -26,12 +28,37 @@ public partial class RecordPage : ContentPage,
             recorders[i] = recorder;
         }
         this.recorders = recorders;
+        // 最後建立 ViewModel 避免 ViewModel 在建構子中使用 IRequirement 時目標未建立。
+        BindingContext = new RecordPageViewModel(this);
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        ViewModel.UpdateGestureTasks();
+        ViewModel.UpdateVocabularies(() =>
+        {
+            if (ViewModel.SelectedVocabularyInfo == null)
+            {
+                ViewModel.SelectedVocabularyInfo = ViewModel.VocabularyInfos.FirstOrDefault();
+            }
+        });
+    }
+
+    private async void WatchReplayButton_Clicked(object sender, EventArgs e)
+    {
+        var index = ViewModel.SelectedVocabularySignIndex;
+        var videoName = ViewModel.SelectedVocabularyInfo.GetVideoName(index);
+        var replayPopup = new ReplayPopup(videoName);
+        var result = await this.ShowPopupAsync(replayPopup);
+    }
+
+    private async void WatchDemoButton_Clicked(object sender, EventArgs e)
+    {
+        var demoPopup = new MediaPlayerPopup();
+        var index = ViewModel.SelectedVocabularySignIndex;
+        var videoName = ViewModel.SelectedVocabularyInfo.GetVideoName(index);
+        demoPopup.ViewModel.LoadDemo(videoName);
+        var result = await this.ShowPopupAsync(demoPopup);
     }
 
     private void RecorderContainer_SizeChanged(object sender, EventArgs e)
@@ -102,7 +129,7 @@ public partial class RecordPage : ContentPage,
                 // 沒有取消時
                 if (targetDeleteLayout != null)
                 {
-                    if(ViewModel.DeleteLayout(targetDeleteLayout))
+                    if (ViewModel.DeleteLayout(targetDeleteLayout))
                     {
                         await DisplayAlert("完成", $"{targetDeleteLayout} 已", "確定");
                     }
@@ -115,20 +142,6 @@ public partial class RecordPage : ContentPage,
                 break;
         }
     }
-
-    private void RecordButton_Clicked(object sender, EventArgs e)
-    {
-        var button = (Button)sender;
-        if (button.Text == "開始錄製")
-        {
-            VisualStateManager.GoToState(button, "Stop");
-        }
-        else if (button.Text == "停止錄製")
-        {
-            VisualStateManager.GoToState(button, "Record");
-        }
-    }
-
 
     private int CalculateColumnCount(int camCount)
     {
