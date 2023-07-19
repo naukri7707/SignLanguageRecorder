@@ -7,7 +7,9 @@ namespace SignLanguageRecorder.Services
         private PyModule scope;
 
         private PyDict members;
+
         private readonly PreferencesService preferencesService;
+
         private PythonService pythonService;
 
         private PyObject getSkeletonImagePyMethod;
