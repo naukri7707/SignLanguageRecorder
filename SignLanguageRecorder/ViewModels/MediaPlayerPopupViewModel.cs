@@ -31,7 +31,7 @@ public partial class MediaPlayerPopupViewModel : ObservableObject
 
     public void LoadDemo(string videoName)
     {
-        var dataFolder = preferencesService.DataFolder;
+        var dataFolder = preferencesService.DemoFolder;
         var fullPath = Path.Combine(dataFolder, "Demo", $"{videoName}.mp4");
 
         if (File.Exists(fullPath))
