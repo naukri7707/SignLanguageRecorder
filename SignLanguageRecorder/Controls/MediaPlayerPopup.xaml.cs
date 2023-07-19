@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Core.Primitives;
+﻿using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Core.Primitives;
 using CommunityToolkit.Maui.Views;
 
 namespace SignLanguageRecorder.Controls;
@@ -72,5 +73,10 @@ public partial class MediaPlayerPopup : Popup,
         ve.FadeTo(0, length);
         ve.Scale = 1;
         ve.ScaleTo(2, length);
+    }
+
+    private void Popup_Closed(object sender, PopupClosedEventArgs e)
+    {
+        MediaPlayer.Handler?.DisconnectHandler();
     }
 }
