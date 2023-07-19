@@ -44,6 +44,14 @@ public partial class RecordPage : ContentPage,
         });
     }
 
+    private async void WatchReplayButton_Clicked(object sender, EventArgs e)
+    {
+        var index = ViewModel.SelectedVocabularySignIndex;
+        var videoName = ViewModel.SelectedVocabularyInfo.GetVideoName(index);
+        var replayPopup = new ReplayPopup(videoName);
+        var result = await this.ShowPopupAsync(replayPopup);
+    }
+
     private async void WatchDemoButton_Clicked(object sender, EventArgs e)
     {
         var demoPopup = new MediaPlayerPopup();

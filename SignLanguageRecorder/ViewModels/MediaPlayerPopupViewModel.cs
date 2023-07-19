@@ -31,16 +31,20 @@ public partial class MediaPlayerPopupViewModel : ObservableObject
 
     public void LoadDemo(string videoName)
     {
-        var dataFolder = preferencesService.DemoFolder;
-        var fullPath = Path.Combine(dataFolder, "Demo", $"{videoName}.mp4");
+        var demoFolder = preferencesService.DemoFolder;
+        var fullPath = Path.Combine(demoFolder, $"{videoName}.mp4");
+        LoadVideo(fullPath);
+    }
 
-        if (File.Exists(fullPath))
+    public void LoadVideo(string videoPath)
+    {
+        if (File.Exists(videoPath))
         {
-            MediaSource = fullPath;
+            MediaSource = videoPath;
         }
         else
         {
-            Application.Current.MainPage.DisplayAlert("錯誤", $"找不到影片\r\n{videoName}", "OK");
+            Application.Current.MainPage.DisplayAlert("錯誤", $"找不到影片\r\n{videoPath}", "OK");
         }
     }
 }
