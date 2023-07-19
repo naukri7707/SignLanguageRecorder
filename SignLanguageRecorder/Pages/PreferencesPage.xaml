@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="SignLanguageRecorder.Pages.PreferencesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
+    xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
+    Title="PreferencesPage"
+    x:DataType="vm:PreferencesPageViewModel">
+    <VerticalStackLayout>
+        <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
+            <Label
+                Grid.Column="0"
+                Text="Data 資料夾"
+                VerticalTextAlignment="Center" />
+            <Grid Grid.Column="1" ColumnDefinitions="*,auto">
+                <Entry
+                    x:Name="DataFolderEntry"
+                    Grid.Column="0"
+                    HorizontalOptions="FillAndExpand" />
+                <c:Icon Grid.Column="1" Symbol="FolderOpen">
+                    <c:Icon.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenDataFolderPickerCommand}" CommandParameter="{Binding ., Source={x:Reference DataFolderEntry}}" />
+                    </c:Icon.GestureRecognizers>
+                </c:Icon>
+            </Grid>
+        </Grid>
+        <Button Command="{Binding SaveCommand}" Text="Save" />
+    </VerticalStackLayout>
+</ContentPage>
