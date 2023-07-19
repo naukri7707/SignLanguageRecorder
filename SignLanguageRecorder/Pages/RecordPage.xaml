@@ -12,8 +12,8 @@
         <VerticalStackLayout FlexLayout.Basis="Auto">
             <CollectionView
                 x:Name="GestureTaskList"
-                ItemsSource="{Binding GestureTasks}"
-                SelectedItem="{Binding SelectedGestureTask}"
+                ItemsSource="{Binding VocabularyInfos}"
+                SelectedItem="{Binding SelectedVocabularyInfo}"
                 SelectionMode="Single">
                 <!--  EmptyView  -->
                 <CollectionView.EmptyView>
@@ -32,7 +32,7 @@
                 </CollectionView.ItemsLayout>
                 <!--  ItemTemplate  -->
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="m:SignLanguageInfo">
+                    <DataTemplate x:DataType="m:VocabularyInfo">
                         <Grid
                             Padding="10"
                             ColumnDefinitions="auto, 150"

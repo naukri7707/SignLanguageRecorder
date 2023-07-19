@@ -20,10 +20,10 @@ public partial class RecordPageViewModel : ObservableObject
 
     public int CamCount { get; private set; } = 1;
 
-    public ObservableCollection<SignLanguageInfo> GestureTasks { get; } = new();
+    public ObservableCollection<VocabularyInfo> VocabularyInfos { get; } = new();
 
     [ObservableProperty]
-    private SignLanguageInfo selectedGestureTask;
+    private VocabularyInfo selectedVocabularyInfo;
 
     public RecordPageViewModel(IRequirement requirement) : this(
         requirement,
@@ -45,13 +45,13 @@ public partial class RecordPageViewModel : ObservableObject
         lock (databaseService)
         {
             using var db = databaseService.GetLiteDatabase();
-            var collection = db.GetCollection<SignLanguageInfo>();
+            var collection = db.GetCollection<VocabularyInfo>();
 
-            GestureTasks.Clear();
+            VocabularyInfos.Clear();
 
             foreach (var task in collection.FindAll())
             {
-                GestureTasks.Add(task);
+                VocabularyInfos.Add(task);
             }
         }
     }
@@ -61,11 +61,11 @@ public partial class RecordPageViewModel : ObservableObject
     {
         await Task.Yield();
         var recorders = requirement.Recorders;
-        var taskName = SelectedGestureTask.Name;
+        var vocabularyName = SelectedVocabularyInfo.Name;
         for (int i = 0; i < CamCount; i++)
         {
             var recorder = recorders[i];
-            var fileName = $"{taskName}_{recorder.ViewModel.RecorderName}";
+            var fileName = $"{vocabularyName}_{recorder.ViewModel.RecorderName}";
 
             if (IsRecording)
             {

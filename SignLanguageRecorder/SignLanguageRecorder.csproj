@@ -62,6 +62,9 @@
       <MauiXaml Update="Controls\MediaPlayerPopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
+      <MauiXaml Update="Pages\DebugPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
       <MauiXaml Update="Pages\RecordPage.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
