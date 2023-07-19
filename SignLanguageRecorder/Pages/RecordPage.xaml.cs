@@ -1,4 +1,6 @@
-﻿namespace SignLanguageRecorder.Pages;
+﻿using CommunityToolkit.Maui.Views;
+
+namespace SignLanguageRecorder.Pages;
 
 public partial class RecordPage : ContentPage,
     IWithViewModel<RecordPageViewModel>,
@@ -234,4 +236,10 @@ public partial class RecordPage : ContentPage,
     Grid RecordPageViewModel.IRequirement.RecorderContainer => RecorderContainer;
 
     Recorder[] RecordPageViewModel.IRequirement.Recorders => recorders;
+
+    private async void WatchDemoButton_Clicked(object sender, EventArgs e)
+    {
+        var demoPopup = new MediaPlayerPopup();
+        var result = await this.ShowPopupAsync(demoPopup);
+    }
 }
