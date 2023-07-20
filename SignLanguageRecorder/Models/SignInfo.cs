@@ -4,11 +4,10 @@ public class SignInfo
 {
     public string Tag { get; set; }
 
-    public bool IsCompleted { get; set; }
-
-    public string FileName { get; set; }
-
     public int[] WordbookIds { get; set; }
+
+    // Todo 移除
+    public bool IsCompleted => false;
 
     public override string ToString()
     {

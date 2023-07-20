@@ -73,6 +73,8 @@ public partial class ReplayPopupViewModel : ObservableObject
     public IEnumerable<string> GetRecordedSignCameras()
     {
         var sourceFolder = Path.Combine(preferencesService.UserFolder, "Source");
+
+        Directory.CreateDirectory(sourceFolder);
         var camFolderPaths = Directory.GetDirectories(sourceFolder);
 
         foreach (var camFolder in camFolderPaths)

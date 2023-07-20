@@ -8,6 +8,7 @@
     Title="PreferencesPage"
     x:DataType="vm:PreferencesPageViewModel">
     <VerticalStackLayout>
+        <Label FontSize="Title" Text="Preferences" />
         <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
             <Label
                 Grid.Column="0"
@@ -57,7 +58,7 @@
         <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
             <Label
                 Grid.Column="0"
-                Text="Demo Folder"
+                Text="Python Folder"
                 VerticalTextAlignment="Center" />
             <Grid Grid.Column="1" ColumnDefinitions="*,auto">
                 <Entry
@@ -72,11 +73,21 @@
             </Grid>
         </Grid>
         <HorizontalStackLayout>
+            <Button Command="{Binding SaveCommand}" Text="Save" />
             <Button
                 BackgroundColor="Red"
                 Command="{Binding ResetCommand}"
                 Text="Reset" />
-            <Button Command="{Binding SaveCommand}" Text="Save" />
+        </HorizontalStackLayout>
+        <Label FontSize="Title" Text="Data" />
+        <Label FontSize="Subtitle" Text="Vocabulary Infos" />
+        <HorizontalStackLayout>
+            <Button Command="{Binding LoadVocabularyInfosCommand}" Text="Load" />
+            <Button Command="{Binding DumpVocabularyInfosCommand}" Text="Dump" />
+            <Button
+                BackgroundColor="Red"
+                Command="{Binding DropVocabularyInfosCommand}"
+                Text="Drop" />
         </HorizontalStackLayout>
     </VerticalStackLayout>
 </ContentPage>

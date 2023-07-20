@@ -10,30 +10,27 @@ namespace SignLanguageRecorder.Services
 
         private readonly PreferencesService preferencesService;
 
-        private PythonService pythonService;
+        private readonly PythonService pythonService;
 
-        private PyObject getSkeletonImagePyMethod;
+        private readonly PyObject getSkeletonImagePyMethod;
 
-        private PyObject createSkeletonVideoPyMethod;
+        private readonly PyObject createSkeletonVideoPyMethod;
 
         public JointsRecognizerService(PreferencesService preferencesService, PythonService pythonService)
         {
             this.preferencesService = preferencesService;
             this.pythonService = pythonService;
 
-            using (Py.GIL())
-            {
-                var scriptPath = Path.Combine(preferencesService.PythonFolder, "Scripts", "JointsRecognizer.py");
+            var scriptPath = Path.Combine(preferencesService.PythonFolder, "Scripts", "JointsRecognizer.py");
 
-                scope = pythonService.CreateScope(
-                    nameof(JointsRecognizerService),
-                    scriptPath,
-                    out members
-                    );
-                //
-                getSkeletonImagePyMethod = members.GetItem("get_skeleton_image");
-                createSkeletonVideoPyMethod = members.GetItem("create_skeleton_video");
-            }
+            scope = pythonService.CreateScope(
+                nameof(JointsRecognizerService),
+                scriptPath,
+                out members
+                );
+            //
+            getSkeletonImagePyMethod = members.GetItem("get_skeleton_image");
+            createSkeletonVideoPyMethod = members.GetItem("create_skeleton_video");
         }
 
         public async void GetSkeletonImage(ImageSource imageSource)
