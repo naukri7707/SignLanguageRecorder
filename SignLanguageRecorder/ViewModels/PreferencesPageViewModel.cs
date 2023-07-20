@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui.Storage;
+using LiteDB;
 using System.Threading;
 
 namespace SignLanguageRecorder.ViewModels;
@@ -18,16 +19,20 @@ public partial class PreferencesPageViewModel : ObservableObject
 
     private readonly PreferencesService preferencesService;
 
+    private readonly VocabularyService vocabularyService;
+
     public PreferencesPageViewModel(IRequirement requirement) : this(
         requirement,
-        Dependency.Inject<PreferencesService>()
+        Dependency.Inject<PreferencesService>(),
+        Dependency.Inject<VocabularyService>()
         )
     { }
 
-    public PreferencesPageViewModel(IRequirement requirement, PreferencesService preferencesService)
+    public PreferencesPageViewModel(IRequirement requirement, PreferencesService preferencesService, VocabularyService vocabularyService)
     {
         this.requirement = requirement;
         this.preferencesService = preferencesService;
+        this.vocabularyService = vocabularyService;
         //
         requirement.UserNameEntry.Text = preferencesService.UserName;
         requirement.UsersFolderEntry.Text = preferencesService.UsersFolder;
@@ -61,5 +66,25 @@ public partial class PreferencesPageViewModel : ObservableObject
         preferencesService.DemoFolder = requirement.DemoFolderEntry.Text;
         preferencesService.PythonFolder = requirement.PythonFolderEntry.Text;
         Application.Current.MainPage.DisplayAlert("完成", $"偏好設定已儲存", "OK");
+    }
+
+    [RelayCommand]
+    public async void LoadVocabularyInfos()
+    {
+        var file = await FilePicker.Default.PickAsync();
+        vocabularyService.AddVocabularyFromJsonFile(file.FullPath);
+    }
+
+    [RelayCommand]
+    public async void DumpVocabularyInfos()
+    {
+        var file = await FilePicker.Default.PickAsync();
+        vocabularyService.Dump(file.FullPath);
+    }
+
+    [RelayCommand]
+    public void DropVocabularyInfos()
+    {
+        vocabularyService.Drop();
     }
 }

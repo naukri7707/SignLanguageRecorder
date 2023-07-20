@@ -5,7 +5,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:p="clr-namespace:SignLanguageRecorder.Pages"
     Shell.FlyoutBehavior="Flyout">
-
     <ShellContent
         Title="Record"
         ContentTemplate="{DataTemplate p:RecordPage}"
