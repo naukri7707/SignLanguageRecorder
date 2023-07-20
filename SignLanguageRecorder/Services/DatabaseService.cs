@@ -4,7 +4,7 @@ namespace SignLanguageRecorder.Services;
 
 public class DatabaseService
 {
-    private const int LAST_VERSION = 1;
+    private const int LAST_VERSION = 2;
 
     private string connectionString;
 
@@ -37,16 +37,24 @@ public class DatabaseService
                 // 將 RecorderLayout.Name 設為索引
                 var recorderLayout = db.GetCollection<RecorderLayout>();
                 recorderLayout.EnsureIndex(it => it.Name, true);
+                // 將 VocabularyInfo.Name 設為索引
+                var vocabularyInfos = db.GetCollection<VocabularyInfo>();
+                vocabularyInfos.EnsureIndex(it => it.Name, true);
                 // 更新版本號至最新版
                 db.UserVersion = LAST_VERSION;
             }
 
             if (db.UserVersion == 1)
             {
-                // 這裡用來將舊使用者的 database 更新到下一版
-                // db.UserVersion = 2;
+                // 將 VocabularyInfo.Name 設為索引
+                var vocabularyInfos = db.GetCollection<VocabularyInfo>();
+                vocabularyInfos.EnsureIndex(it => it.Name, true);
+                db.UserVersion = 2;
             }
-
+            if(db.UserVersion == 2)
+            {
+                // db.UserVersion = 3;
+            }
         }
     }
 
