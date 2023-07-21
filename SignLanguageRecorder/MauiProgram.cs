@@ -20,6 +20,8 @@ public static class MauiProgram
                 fonts.AddFont("MaterialDesignIcon.ttf", Icon.UsingFontFamilyName);
             });
 
+        // 處理 Unpack app icon font 遺失問題
+        Icon.FixUnpackAppMissingFont("Resources/Fonts/MaterialDesignIcon.ttf", "Material Design Icons");
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
