@@ -51,6 +51,7 @@ public class Icon : Label
         get => base.FontSize;
         set => base.FontSize = value;
     }
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public new string FontFamily
     {
@@ -64,5 +65,27 @@ public class Icon : Label
         HorizontalOptions = LayoutOptions.Center;
         VerticalOptions = LayoutOptions.Center;
         IconSize = IconSize.Small;
+    }
+
+    /// <summary>
+    /// 處理 Unpack app icon font 遺失問題
+    /// </summary>
+    /// <param name="fontFile">ttf / oft 在專案中的路徑</param>
+    /// <param name="fontName">ttf / otf 確切名稱 (在字形檔案右鍵 -> 預覽中可以找到)</param>
+    public static void FixUnpackAppMissingFont(string fontFile, string fontName)
+    {
+        var fontFamily = $"ms-appx:///{fontFile}#{fontName}";
+#if WINDOWS
+        Microsoft.Maui.Handlers.LabelHandler.Mapper.AppendToMapping("FontFamily", (handler, element) =>
+        {
+            if (element.Font.Family == UsingFontFamilyName)
+            {
+                if (element is Label label)
+                {
+                    label.FontFamily = fontFamily;
+                }
+            }
+        });
+#endif
     }
 }

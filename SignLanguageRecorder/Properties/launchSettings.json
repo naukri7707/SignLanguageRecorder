@@ -1,7 +1,11 @@
-{
+﻿{
   "profiles": {
-    "Windows Machine": {
+    "Build (Msix Package)": {
       "commandName": "MsixPackage",
+      "nativeDebugging": false
+    },
+    "Build (Portable)": {
+      "commandName": "Project",
       "nativeDebugging": false
     }
   }
