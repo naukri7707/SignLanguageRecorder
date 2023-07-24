@@ -45,10 +45,6 @@
                                 Symbol="CircleMedium" />
                             <HorizontalStackLayout Grid.Column="1">
                                 <Label Text="{Binding Name}" />
-                                <Label
-                                    Margin="5,0,0,0"
-                                    Text="{Binding ProgressText}"
-                                    TextColor="Gray" />
                             </HorizontalStackLayout>
                         </Grid>
                     </DataTemplate>
@@ -63,17 +59,6 @@
                     Grid.Column="0"
                     FontSize="Large"
                     Text="{Binding SelectedVocabularyInfo.Name}"
-                    VerticalOptions="Center"
-                    VerticalTextAlignment="Center" />
-                <Picker
-                    x:Name="SignPicker"
-                    Grid.Column="1"
-                    Margin="10,0,0,0"
-                    HorizontalOptions="Start"
-                    IsEnabled="{Binding SelectedVocabularyInfo.MultiSign}"
-                    IsVisible="{Binding SelectedVocabularyInfo.MultiSign}"
-                    ItemsSource="{Binding SelectedVocabularyInfo.Signs}"
-                    SelectedIndex="{Binding SelectedVocabularySignIndex}"
                     VerticalOptions="Center"
                     VerticalTextAlignment="Center" />
                 <HorizontalStackLayout

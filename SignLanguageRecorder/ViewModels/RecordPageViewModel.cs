@@ -27,9 +27,6 @@ public partial class RecordPageViewModel : ObservableObject
     [ObservableProperty]
     private VocabularyInfo selectedVocabularyInfo;
 
-    [ObservableProperty]
-    private int selectedVocabularySignIndex = -1;
-
     public RecordPageViewModel(IRequirement requirement) : this(
         requirement,
         Dependency.Inject<DatabaseService>(),
@@ -72,16 +69,6 @@ public partial class RecordPageViewModel : ObservableObject
         }
     }
 
-    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
-    {
-        base.OnPropertyChanged(e);
-
-        if (e.PropertyName == nameof(SelectedVocabularyInfo))
-        {
-           SelectedVocabularySignIndex = 0;
-        }
-    }
-
     [RelayCommand]
     public async void RecordButton_Clicked()
     {
@@ -97,8 +84,7 @@ public partial class RecordPageViewModel : ObservableObject
             }
             else
             {
-                var signIndex = SelectedVocabularySignIndex;
-                var videoName = SelectedVocabularyInfo.GetVideoName(signIndex);
+                var videoName = SelectedVocabularyInfo.Name;
                 _ = recorder.ViewModel.StartRecordAsync(videoName);
             }
         }
