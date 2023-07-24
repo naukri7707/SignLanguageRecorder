@@ -21,7 +21,8 @@ public static class MauiProgram
             });
 
         // 處理 Unpack app icon font 遺失問題
-        Icon.FixUnpackAppMissingFont("Resources/Fonts/MaterialDesignIcon.ttf", "Material Design Icons");
+        // 不需要加上路徑 (Resources/Fonts/MaterialDesignIcon.ttf) 因為這裡是抓建置後的位置，而字形檔建置後會被複製到與執行檔 (.exe) 同級的資料夾
+        Icon.FixUnpackAppMissingFont(@"MaterialDesignIcon.ttf", "Material Design Icons");
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
