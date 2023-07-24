@@ -70,8 +70,8 @@ public class Icon : Label
     /// <summary>
     /// 處理 Unpack app icon font 遺失問題
     /// </summary>
-    /// <param name="fontFile">ttf / oft 在專案中的路徑</param>
-    /// <param name="fontName">ttf / otf 確切名稱 (在字形檔案右鍵 -> 預覽中可以找到)</param>
+    /// <param name="fontFile">字形檔在專案建置後中的路徑</param>
+    /// <param name="fontName">字形檔確切名稱 (在字形檔案右鍵 -> 預覽中可以查看)</param>
     public static void FixUnpackAppMissingFont(string fontFile, string fontName)
     {
         var fontFamily = $"ms-appx:///{fontFile}#{fontName}";
@@ -80,9 +80,9 @@ public class Icon : Label
         {
             if (element.Font.Family == UsingFontFamilyName)
             {
-                if (element is Label label)
+                if (element is Icon icon)
                 {
-                    label.FontFamily = fontFamily;
+                    icon.FontFamily = fontFamily;
                 }
             }
         });
