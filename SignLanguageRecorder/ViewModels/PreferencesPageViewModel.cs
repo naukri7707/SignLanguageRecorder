@@ -71,15 +71,20 @@ public partial class PreferencesPageViewModel : ObservableObject
     [RelayCommand]
     public async void LoadVocabularyInfos()
     {
-        var file = await FilePicker.Default.PickAsync();
-        vocabularyService.AddVocabularyFromJsonFile(file.FullPath);
+        var result = await FilePicker.Default.PickAsync();
+        vocabularyService.AddVocabularyFromJsonFile(result.FullPath);
     }
 
     [RelayCommand]
     public async void DumpVocabularyInfos()
     {
-        var file = await FilePicker.Default.PickAsync();
-        vocabularyService.Dump(file.FullPath);
+        var ct = new CancellationToken();
+        var result = await FolderPicker.Default.PickAsync(ct);
+        if (result.IsSuccessful)
+        {
+            var path = Path.Combine(result.Folder.Path, "data.json");
+            vocabularyService.Dump(path);
+        }
     }
 
     [RelayCommand]
