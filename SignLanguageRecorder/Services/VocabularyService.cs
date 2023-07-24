@@ -20,7 +20,8 @@ public class VocabularyService
         using var db = databaseService.GetLiteDatabase();
         using var reader = new StreamReader(filePath, Encoding.UTF8);
         var jsonReader = new JsonReader(reader);
-        var docs = jsonReader.DeserializeArray().Select(it => it.AsDocument);
+        // 必須要 ToArray 否則不能正常遍歷
+        var docs = jsonReader.DeserializeArray().ToArray().Select(it => it.AsDocument);
         var collection = db.GetCollection(nameof(VocabularyInfo));
         collection.Upsert(docs);
     }
