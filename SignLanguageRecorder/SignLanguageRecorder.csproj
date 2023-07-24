@@ -67,15 +67,4 @@
         <PackageReference Include="pythonnet" Version="3.1.0-preview2023-07-03" />
     </ItemGroup>
 
-    <ItemGroup>
-      <MauiXaml Update="Controls\MediaPlayerPopup.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-      <MauiXaml Update="Pages\DebugPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-      <MauiXaml Update="Pages\RecordPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </MauiXaml>
-    </ItemGroup>
 </Project>
