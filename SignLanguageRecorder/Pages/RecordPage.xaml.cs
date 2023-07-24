@@ -46,8 +46,7 @@ public partial class RecordPage : ContentPage,
 
     private async void WatchReplayButton_Clicked(object sender, EventArgs e)
     {
-        var index = ViewModel.SelectedVocabularySignIndex;
-        var videoName = ViewModel.SelectedVocabularyInfo.GetVideoName(index);
+        var videoName = ViewModel.SelectedVocabularyInfo.Name;
         var replayPopup = new ReplayPopup(videoName);
         var result = await this.ShowPopupAsync(replayPopup);
     }
@@ -55,8 +54,7 @@ public partial class RecordPage : ContentPage,
     private async void WatchDemoButton_Clicked(object sender, EventArgs e)
     {
         var demoPopup = new MediaPlayerPopup();
-        var index = ViewModel.SelectedVocabularySignIndex;
-        var videoName = ViewModel.SelectedVocabularyInfo.GetVideoName(index);
+        var videoName = ViewModel.SelectedVocabularyInfo.Name;
         demoPopup.ViewModel.LoadDemo(videoName);
         var result = await this.ShowPopupAsync(demoPopup);
     }
