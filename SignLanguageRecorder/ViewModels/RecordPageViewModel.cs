@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using LiteDB;
+using System.ComponentModel;
 
 namespace SignLanguageRecorder.ViewModels;
 
@@ -7,46 +8,40 @@ public partial class RecordPageViewModel : ObservableObject
     public interface IRequirement
     {
         public Grid RecorderContainer { get; }
-
-        public Recorder[] Recorders { get; }
     }
 
     private readonly IRequirement requirement;
 
     private readonly DatabaseService databaseService;
 
-    private readonly RecorderLayoutService recorderLayoutService;
+    private readonly RecordService recordService;
 
     [ObservableProperty]
     private bool isRecording;
-
-    public int CamCount { get; private set; } = 1;
 
     public ObservableCollection<VocabularyInfo> VocabularyInfos { get; } = new();
 
     [ObservableProperty]
     private VocabularyInfo selectedVocabularyInfo;
 
+    public int ActivedRecorderCount => recordService.ActivedRecorderCount;
+
     public RecordPageViewModel(IRequirement requirement) : this(
         requirement,
         Dependency.Inject<DatabaseService>(),
-        Dependency.Inject<RecorderLayoutService>()
+        Dependency.Inject<RecordService>()
         )
     { }
 
-    public RecordPageViewModel(IRequirement requirement, DatabaseService databaseService, RecorderLayoutService recorderLayoutService)
+    public RecordPageViewModel(IRequirement requirement, DatabaseService databaseService, RecordService recordService)
     {
         this.requirement = requirement;
         this.databaseService = databaseService;
-        this.recorderLayoutService = recorderLayoutService;
-        //
-        for (int i = 0; i < requirement.Recorders.Length; i++)
+        this.recordService = recordService;
+
+        foreach (var recorder in recordService.Recorders)
         {
-            var recorder = requirement.Recorders[i];
-            if(string.IsNullOrEmpty(recorder.ViewModel.RecorderName))
-            {
-                recorder.ViewModel.RecorderName = $"Cam {i}";
-            }
+            requirement.RecorderContainer.Children.Add(recorder);
         }
     }
 
@@ -70,35 +65,27 @@ public partial class RecordPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async void RecordButton_Clicked()
+    public void RecordButton_Clicked()
     {
-        await Task.Yield();
-        var recorders = requirement.Recorders;
-        for (int i = 0; i < CamCount; i++)
+        if (recordService.IsRecording)
         {
-            var recorder = recorders[i];
-
-            if (IsRecording)
-            {
-                _ = recorder.ViewModel.StopRecordAsync();
-            }
-            else
-            {
-                var videoName = SelectedVocabularyInfo.Name;
-                _ = recorder.ViewModel.StartRecordAsync(videoName);
-            }
-        }
-        IsRecording = !IsRecording;
-    }
-
-    public bool TrySetCamCount(int camCount)
-    {
-        if (camCount > 0 && camCount <= 16)
-        {
-            CamCount = camCount;
-            return true;
+            var name = SelectedVocabularyInfo.Name;
+            recordService.StartRecording(name);
         }
         else
+        {
+            recordService.StopRecording();
+        }
+    }
+
+    public bool TrySetActivedRecorderCount(int recorderCount)
+    {
+        try
+        {
+            recordService.ActivedRecorderCount = recorderCount;
+            return true;
+        }
+        catch
         {
             return false;
         }
@@ -113,39 +100,23 @@ public partial class RecordPageViewModel : ObservableObject
 
     public void SaveLayout(string layoutName)
     {
-        var infos = requirement.Recorders
-            .Select(recorder => recorder.ViewModel.GetInfo())
-            .Take(CamCount)
-            .ToArray();
-        recorderLayoutService.SaveLayout(layoutName, infos);
+        recordService.SaveLayout(layoutName);
     }
 
     public bool LoadLayout(string layoutName)
     {
-        var layout = recorderLayoutService.LoadLayout(layoutName);
-
-        if (layout == null)
-        {
-            return false;
-        }
-
-        CamCount = layout.Infos.Length;
-        for (var i = 0; i < CamCount; i++)
-        {
-            var info = layout.Infos[i];
-            requirement.Recorders[i].ViewModel.SetInfo(info);
-        }
-        return true;
+        return recordService.LoadLayout(layoutName);
     }
+
 
     public bool DeleteLayout(string layoutName)
     {
-        return recorderLayoutService.DeleteLayout(layoutName);
+        return recordService.DeleteLayout(layoutName);
     }
 
     public string[] GetLayoutNames()
     {
-        return recorderLayoutService.GetLayoutNames();
+        return recordService.GetLayoutNames();
     }
 }
 

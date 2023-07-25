@@ -30,8 +30,8 @@ public static class MauiProgram
         builder.Services.AddTransient<SecureStorageService>();
         builder.Services.AddSingleton<PreferencesService>();
         builder.Services.AddSingleton<DatabaseService>();
-        builder.Services.AddTransient<RecorderLayoutService>();
-        builder.Services.AddTransient<VocabularyService>();
+        builder.Services.AddSingleton<RecordService>();
+        builder.Services.AddSingleton<VocabularyService>();
         // Python
         builder.Services.AddSingleton<PythonService>();
         builder.Services.AddSingleton<JointsRecognizerService>();

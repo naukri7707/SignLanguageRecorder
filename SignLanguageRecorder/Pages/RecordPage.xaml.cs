@@ -7,28 +7,11 @@ public partial class RecordPage : ContentPage,
     IWithViewModel<RecordPageViewModel>,
     RecordPageViewModel.IRequirement
 {
-    private readonly Recorder[] recorders;
-
     public RecordPageViewModel ViewModel => BindingContext as RecordPageViewModel;
 
     public RecordPage()
     {
         InitializeComponent();
-
-        var recorders = new Recorder[16];
-
-        for (int i = 0; i < 16; i++)
-        {
-            var recorder = new Recorder
-            {
-                IsEnabled = false,
-                IsVisible = false,
-            };
-            RecorderContainer.Add(recorder);
-            recorders[i] = recorder;
-        }
-        this.recorders = recorders;
-        // 最後建立 ViewModel 避免 ViewModel 在建構子中使用 IRequirement 時目標未建立。
         BindingContext = new RecordPageViewModel(this);
     }
 
@@ -76,17 +59,19 @@ public partial class RecordPage : ContentPage,
         switch (result)
         {
             case "設定攝影機數量":
-                var newCamCountText = await DisplayPromptAsync("攝影機數量", null, "確定", "取消", "攝影機數量", 2, Keyboard.Numeric, ViewModel.CamCount.ToString());
-
+                var newCamCountText = await DisplayPromptAsync(
+                    "攝影機數量", null, "確定", "取消", "攝影機數量", 2,
+                    Keyboard.Numeric, ViewModel.ActivedRecorderCount.ToString()
+                    );
                 // 取消
                 if (newCamCountText == null)
                 {
                     break;
                 }
                 // 可以轉換成數字
-                else if (int.TryParse(newCamCountText, out var newCamCount))
+                else if (int.TryParse(newCamCountText, out var newRecorderCount))
                 {
-                    if (ViewModel.TrySetCamCount(newCamCount))
+                    if (ViewModel.TrySetActivedRecorderCount(newRecorderCount))
                     {
                         RefreshRecorders();
                     }
@@ -180,15 +165,14 @@ public partial class RecordPage : ContentPage,
     public void RefreshRecorders()
     {
         var recorderContainer = RecorderContainer;
-        var recorders = this.recorders;
-
-        var camCount = ViewModel.CamCount;
-        var columnCount = CalculateColumnCount(camCount);
-        var rowCount = CalculateRowCount(camCount);
+        var recorders = recorderContainer.Children.OfType<Recorder>().ToArray();
+        var recorderCount = ViewModel.ActivedRecorderCount;
+        var columnCount = CalculateColumnCount(recorderCount);
+        var rowCount = CalculateRowCount(recorderCount);
         recorderContainer.ColumnDefinitions = CalculateColumnDefinitionsOfRecorderContainer(columnCount);
         recorderContainer.RowDefinitions = CalculateRowDefinitionsOfRecorderContainer(rowCount);
 
-        if (camCount == 0)
+        if (recorderCount == 0)
         {
             for (int i = 0; i < 16; i++)
             {
@@ -203,8 +187,8 @@ public partial class RecordPage : ContentPage,
         var camHeight = recorderContainer.Height / rowCount;
 
         var cellCount = columnCount * rowCount;
-        var emptyCount = cellCount - camCount;
-        var flexRowFirstIndex = camCount % columnCount == 0
+        var emptyCount = cellCount - recorderCount;
+        var flexRowFirstIndex = recorderCount % columnCount == 0
             ? int.MaxValue // No flex row
             : cellCount - columnCount;
         var flexRowTranslationX = emptyCount * camWidth / 2;
@@ -212,7 +196,7 @@ public partial class RecordPage : ContentPage,
         for (int i = 0; i < 16; i++)
         {
             var ve = recorders[i];
-            if (i < camCount)
+            if (i < recorderCount)
             {
                 // 設定 view 欄位
                 var c = i % columnCount;
@@ -243,6 +227,4 @@ public partial class RecordPage : ContentPage,
     }
 
     Grid RecordPageViewModel.IRequirement.RecorderContainer => RecorderContainer;
-
-    Recorder[] RecordPageViewModel.IRequirement.Recorders => recorders;
 }
