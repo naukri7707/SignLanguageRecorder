@@ -26,6 +26,7 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+        builder.Services.AddSingleton<DialogService>();
         // Data
         builder.Services.AddTransient<SecureStorageService>();
         builder.Services.AddSingleton<PreferencesService>();
@@ -37,7 +38,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<JointsRecognizerService>();
 
         var app = builder.Build();
-
         return app;
     }
 }
