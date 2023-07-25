@@ -11,6 +11,10 @@
         <AbsoluteLayout.GestureRecognizers>
             <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
         </AbsoluteLayout.GestureRecognizers>
+        <Rectangle
+            AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+            AbsoluteLayout.LayoutFlags="All"
+            BackgroundColor="Black" />
         <cam:CameraView
             x:Name="CameraView"
             AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
