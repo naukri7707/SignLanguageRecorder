@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<tk:Popup
+    x:Class="SignLanguageRecorder.Controls.CountDownPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
+    xmlns:tk="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
+    x:DataType="vm:CountDownPopupViewModel"
+    CanBeDismissedByTappingOutsideOfPopup="True"
+    Color="Transparent">
+    <AbsoluteLayout
+        Margin="10"
+        HeightRequest="600"
+        WidthRequest="800">
+        <Label
+            AbsoluteLayout.LayoutBounds="0.5, 0.5, AutoSize, AutoSize"
+            AbsoluteLayout.LayoutFlags="PositionProportional"
+            FontSize="256"
+            Text="{Binding CountDown}" />
+    </AbsoluteLayout>
+</tk:Popup>
