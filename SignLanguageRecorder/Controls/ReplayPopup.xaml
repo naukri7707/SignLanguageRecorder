@@ -14,9 +14,9 @@
     <VerticalStackLayout>
         <HorizontalStackLayout>
             <Picker
-                x:Name="CameraPicker"
-                ItemsSource="{Binding Cameras}"
-                SelectedIndex="{Binding SelectedCameraIndex}" />
+                x:Name="FileNamePicker"
+                ItemsSource="{Binding FileNames}"
+                SelectedIndex="{Binding SelectedFileIndex}" />
             <Button Command="{Binding LoadSourceVideoCommand}" Text="Source" />
             <Button Command="{Binding LoadSkeletonVideoCommand}" Text="Skeleton" />
         </HorizontalStackLayout>

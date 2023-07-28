@@ -1,13 +1,10 @@
-﻿using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Views;
-using System.Diagnostics;
-
-namespace SignLanguageRecorder.ViewModels;
+﻿namespace SignLanguageRecorder.ViewModels;
 
 public partial class ReplayPopupViewModel : ObservableObject
 {
     public interface IRequirement
     {
+
     }
 
     private readonly IRequirement requirement;
@@ -18,17 +15,13 @@ public partial class ReplayPopupViewModel : ObservableObject
 
     private readonly JointsRecognizerService jointsRecognizerService;
 
-    public ObservableCollection<string> Cameras { get; set; }
+    public ObservableCollection<string> FileNames { get; set; }
 
     [ObservableProperty]
     private bool isBusy;
 
     [ObservableProperty]
-    private int selectedCameraIndex;
-
-    public string SelectedCamera => SelectedCameraIndex >= 0 && SelectedCameraIndex < Cameras.Count
-        ? Cameras[SelectedCameraIndex]
-        : "None";
+    private string selectedFileName;
 
     public string VideoName { get; set; }
 
@@ -41,7 +34,7 @@ public partial class ReplayPopupViewModel : ObservableObject
         {
             var userFolder = preferencesService.UsersFolder;
             var userName = preferencesService.UserName;
-            return Path.Combine(userFolder, userName, "Source", SelectedCamera, $"{VideoName}.mp4");
+            return Path.Combine(userFolder, userName, "Source", $"{VideoName}_{Select}.mp4");
         }
     }
 
@@ -72,7 +65,18 @@ public partial class ReplayPopupViewModel : ObservableObject
         this.preferencesService = preferencesService;
         this.jointsRecognizerService = jointsRecognizerService;
         //
-        Cameras = new ObservableCollection<string>(GetRecordedSignCameras());
+        var userFolder = preferencesService.UsersFolder;
+        var userName = preferencesService.UserName;
+        var folderPath = Path.Combine(userFolder, userName, "Source");
+        var files = Directory.GetFiles(folderPath, $"{videoName}_*.mp4")
+            .Select(it =>
+            {
+                var fileName = Path.GetFileNameWithoutExtension(it);
+                var prefixLength = $"{videoName}_".Length;
+                var trueText = fileName.Substring(prefixLength, fileName.Length - prefixLength - 4);
+                return trueText;
+            });
+        FileNames = new ObservableCollection<string>(files);
     }
 
 
