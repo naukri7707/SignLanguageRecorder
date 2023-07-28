@@ -1,7 +1,4 @@
-﻿using LiteDB;
-using System.ComponentModel;
-
-namespace SignLanguageRecorder.ViewModels;
+﻿namespace SignLanguageRecorder.ViewModels;
 
 public partial class RecordPageViewModel : ObservableObject
 {
@@ -11,6 +8,8 @@ public partial class RecordPageViewModel : ObservableObject
     }
 
     private readonly IRequirement requirement;
+
+    private readonly DialogService dialogService;
 
     private readonly DatabaseService databaseService;
 
@@ -24,18 +23,22 @@ public partial class RecordPageViewModel : ObservableObject
     [ObservableProperty]
     private VocabularyInfo selectedVocabularyInfo;
 
+    public event Action LayoutChanged = () => { };
+
     public int ActivedRecorderCount => recordService.ActivedRecorderCount;
 
     public RecordPageViewModel(IRequirement requirement) : this(
         requirement,
+        Dependency.Inject<DialogService>(),
         Dependency.Inject<DatabaseService>(),
         Dependency.Inject<RecordService>()
         )
     { }
 
-    public RecordPageViewModel(IRequirement requirement, DatabaseService databaseService, RecordService recordService)
+    public RecordPageViewModel(IRequirement requirement, DialogService dialogService, DatabaseService databaseService, RecordService recordService)
     {
         this.requirement = requirement;
+        this.dialogService = dialogService;
         this.databaseService = databaseService;
         this.recordService = recordService;
 
@@ -65,16 +68,104 @@ public partial class RecordPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void RecordButton_Clicked()
+    private void RecordButton_Clicked()
     {
-        if (recordService.IsRecording)
+        try
         {
-            var name = SelectedVocabularyInfo.Name;
-            recordService.StartRecording(name);
+            if (recordService.IsRecording)
+            {
+                var name = SelectedVocabularyInfo.Name;
+                recordService.StartRecording(name);
+            }
+            else
+            {
+                recordService.StopRecording();
+            }
+
         }
-        else
+        catch (Exception ex)
         {
-            recordService.StopRecording();
+            dialogService.Toast(ex.Message);
+        }
+    }
+
+    [RelayCommand]
+    private async void MenuButton_Tapped()
+    {
+        Task<string> DisplayLayoutPicker()
+        {
+            var layouts = recordService.GetLayoutNames();
+            return dialogService.DisplayActionSheet("選擇佈局", null, null, layouts);
+        }
+
+        var result = await dialogService.DisplayActionSheet("選擇動作", null, null, "設定攝影機數量", "載入佈局", "儲存佈局", "刪除佈局", "開啟儲存位置");
+        switch (result)
+        {
+            case "設定攝影機數量":
+                var newCamCountText = await dialogService.DisplayPromptAsync(
+                    "攝影機數量", null, "確定", "取消", "攝影機數量", 2,
+                    Keyboard.Numeric, recordService.ActivedRecorderCount.ToString()
+                    );
+                // 取消
+                if (newCamCountText == null)
+                {
+                    break;
+                }
+                // 可以轉換成數字
+                else if (int.TryParse(newCamCountText, out var newRecorderCount))
+                {
+                    if (TrySetActivedRecorderCount(newRecorderCount))
+                    {
+                        LayoutChanged.Invoke();
+                    }
+                    else
+                    {
+                        await dialogService.DisplayAlert("錯誤", "攝影機數量必須在1~16之間", "確定");
+                    }
+                }
+                // 不能轉換為數字時
+                else
+                {
+                    await dialogService.DisplayAlert("錯誤", "攝影機數量必須是正整數", "確定");
+                }
+
+                break;
+            case "載入佈局":
+                var targetLoadLayout = await DisplayLayoutPicker();
+                // 沒有取消時
+                if (targetLoadLayout != null)
+                {
+                    if (LoadLayout(targetLoadLayout))
+                    {
+                        LayoutChanged.Invoke();
+                    }
+                }
+                break;
+            case "儲存佈局":
+                var layoutName = await dialogService.DisplayPromptAsync("儲存佈局", "佈局名稱", "確定", "取消", "佈局名稱", -1, Keyboard.Text);
+
+                // 沒有取消時
+                if (layoutName != null)
+                {
+                    recordService.SaveLayout(layoutName);
+                }
+                break;
+            case "刪除佈局":
+                var targetDeleteLayout = await DisplayLayoutPicker();
+                // 沒有取消時
+                if (targetDeleteLayout != null)
+                {
+                    if (recordService.DeleteLayout(targetDeleteLayout))
+                    {
+                        await dialogService.DisplayAlert("完成", $"{targetDeleteLayout} 已", "確定");
+                    }
+                }
+                break;
+            case "開啟儲存位置":
+                OpenSavedataFolder();
+                break;
+            default:
+                break;
         }
     }
 
@@ -112,11 +203,6 @@ public partial class RecordPageViewModel : ObservableObject
     public bool DeleteLayout(string layoutName)
     {
         return recordService.DeleteLayout(layoutName);
-    }
-
-    public string[] GetLayoutNames()
-    {
-        return recordService.GetLayoutNames();
     }
 }
 

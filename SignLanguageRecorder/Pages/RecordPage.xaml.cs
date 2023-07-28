@@ -13,6 +13,7 @@ public partial class RecordPage : ContentPage,
     {
         InitializeComponent();
         BindingContext = new RecordPageViewModel(this);
+        ViewModel.LayoutChanged += RefreshRecorders;
     }
 
     protected override void OnAppearing()
@@ -45,85 +46,6 @@ public partial class RecordPage : ContentPage,
     private void RecorderContainer_SizeChanged(object sender, EventArgs e)
     {
         RefreshRecorders();
-    }
-
-    private async void MenuButton_Tapped(object sender, TappedEventArgs e)
-    {
-        Task<string> DisplayLayoutPicker()
-        {
-            var layouts = ViewModel.GetLayoutNames();
-            return DisplayActionSheet("選擇佈局", null, null, layouts);
-        }
-
-        var result = await DisplayActionSheet("選擇動作", null, null, "設定攝影機數量", "載入佈局", "儲存佈局", "刪除佈局", "開啟儲存位置");
-        switch (result)
-        {
-            case "設定攝影機數量":
-                var newCamCountText = await DisplayPromptAsync(
-                    "攝影機數量", null, "確定", "取消", "攝影機數量", 2,
-                    Keyboard.Numeric, ViewModel.ActivedRecorderCount.ToString()
-                    );
-                // 取消
-                if (newCamCountText == null)
-                {
-                    break;
-                }
-                // 可以轉換成數字
-                else if (int.TryParse(newCamCountText, out var newRecorderCount))
-                {
-                    if (ViewModel.TrySetActivedRecorderCount(newRecorderCount))
-                    {
-                        RefreshRecorders();
-                    }
-                    else
-                    {
-                        await DisplayAlert("錯誤", "攝影機數量必須在1~16之間", "確定");
-                    }
-                }
-                // 不能轉換為數字時
-                else
-                {
-                    await DisplayAlert("錯誤", "攝影機數量必須是正整數", "確定");
-                }
-
-                break;
-            case "載入佈局":
-                var targetLoadLayout = await DisplayLayoutPicker();
-                // 沒有取消時
-                if (targetLoadLayout != null)
-                {
-                    if (ViewModel.LoadLayout(targetLoadLayout))
-                    {
-                        RefreshRecorders();
-                    }
-                }
-                break;
-            case "儲存佈局":
-                var layoutName = await DisplayPromptAsync("儲存佈局", "佈局名稱", "確定", "取消", "佈局名稱", -1, Keyboard.Text);
-
-                // 沒有取消時
-                if (layoutName != null)
-                {
-                    ViewModel.SaveLayout(layoutName);
-                }
-                break;
-            case "刪除佈局":
-                var targetDeleteLayout = await DisplayLayoutPicker();
-                // 沒有取消時
-                if (targetDeleteLayout != null)
-                {
-                    if (ViewModel.DeleteLayout(targetDeleteLayout))
-                    {
-                        await DisplayAlert("完成", $"{targetDeleteLayout} 已", "確定");
-                    }
-                }
-                break;
-            case "開啟儲存位置":
-                ViewModel.OpenSavedataFolder();
-                break;
-            default:
-                break;
-        }
     }
 
     private int CalculateColumnCount(int camCount)

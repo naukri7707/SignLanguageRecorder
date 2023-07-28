@@ -105,7 +105,7 @@
                     Symbol="Menu"
                     VerticalOptions="Center">
                     <c:Icon.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="MenuButton_Tapped" />
+                        <TapGestureRecognizer Command="{Binding MenuButton_TappedCommand}" />
                     </c:Icon.GestureRecognizers>
                 </c:Icon>
             </Grid>
