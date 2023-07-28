@@ -1,13 +1,15 @@
 ﻿using LiteDB;
 using SignLanguageRecorder.Extensions;
-using System.IO;
 using System.Text;
-using ZXing;
 
 namespace SignLanguageRecorder.Services;
 
 public class VocabularyService
 {
+    private VocabularyInfo[] vocabularyInfos;
+
+    public VocabularyInfo[] VocabularyInfos => vocabularyInfos;
+
     private readonly DatabaseService databaseService;
 
     public VocabularyService(DatabaseService databaseService)
@@ -20,9 +22,27 @@ public class VocabularyService
         using var db = databaseService.GetLiteDatabase();
         using var reader = new StreamReader(filePath, Encoding.UTF8);
         var jsonReader = new JsonReader(reader);
-        var docs = jsonReader.DeserializeArray().Select(it => it.AsDocument);
+        // 必須要 ToArray 否則不能正常遍歷
+        var docs = jsonReader.DeserializeArray().ToArray().Select(it => it.AsDocument);
         var collection = db.GetCollection(nameof(VocabularyInfo));
         collection.Upsert(docs);
+    }
+
+    public async void Test()
+    {
+        await UpdateVocabularyInfos();
+        Console.WriteLine("1");
+    }
+
+    public async Task<VocabularyInfo[]> UpdateVocabularyInfos()
+    {
+        await Task.Yield();
+        using var db = databaseService.GetLiteDatabase();
+        var collection = db.GetCollection<VocabularyInfo>();
+
+        vocabularyInfos = collection.FindAll().ToArray();
+
+        return vocabularyInfos;
     }
 
     public void Drop()

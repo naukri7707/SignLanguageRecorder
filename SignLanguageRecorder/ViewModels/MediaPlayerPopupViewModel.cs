@@ -14,19 +14,23 @@ public partial class MediaPlayerPopupViewModel : ObservableObject
 
     private readonly PreferencesService preferencesService;
 
+    private readonly DialogService dialogService;
+
     [ObservableProperty]
     private string mediaSource;
 
     public MediaPlayerPopupViewModel(IRequirement requirement) : this(
         requirement,
-        Dependency.Inject<PreferencesService>()
+        Dependency.Inject<PreferencesService>(),
+        Dependency.Inject<DialogService>()
         )
     { }
 
-    public MediaPlayerPopupViewModel(IRequirement requirement, PreferencesService preferencesService)
+    public MediaPlayerPopupViewModel(IRequirement requirement, PreferencesService preferencesService, DialogService dialogService)
     {
         this.requirement = requirement;
         this.preferencesService = preferencesService;
+        this.dialogService = dialogService;
     }
 
     public void LoadDemo(string videoName)
@@ -36,7 +40,7 @@ public partial class MediaPlayerPopupViewModel : ObservableObject
         LoadVideo(fullPath);
     }
 
-    public void LoadVideo(string videoPath)
+    public async void LoadVideo(string videoPath)
     {
         if (File.Exists(videoPath))
         {
@@ -44,7 +48,7 @@ public partial class MediaPlayerPopupViewModel : ObservableObject
         }
         else
         {
-            Application.Current.MainPage.DisplayAlert("錯誤", $"找不到影片\r\n{videoPath}", "OK");
+            await dialogService.DisplayAlert("錯誤", $"找不到影片\r\n{videoPath}", "確認");
         }
     }
 }

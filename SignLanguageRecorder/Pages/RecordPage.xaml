@@ -45,10 +45,6 @@
                                 Symbol="CircleMedium" />
                             <HorizontalStackLayout Grid.Column="1">
                                 <Label Text="{Binding Name}" />
-                                <Label
-                                    Margin="5,0,0,0"
-                                    Text="{Binding ProgressText}"
-                                    TextColor="Gray" />
                             </HorizontalStackLayout>
                         </Grid>
                     </DataTemplate>
@@ -65,17 +61,6 @@
                     Text="{Binding SelectedVocabularyInfo.Name}"
                     VerticalOptions="Center"
                     VerticalTextAlignment="Center" />
-                <Picker
-                    x:Name="SignPicker"
-                    Grid.Column="1"
-                    Margin="10,0,0,0"
-                    HorizontalOptions="Start"
-                    IsEnabled="{Binding SelectedVocabularyInfo.MultiSign}"
-                    IsVisible="{Binding SelectedVocabularyInfo.MultiSign}"
-                    ItemsSource="{Binding SelectedVocabularyInfo.Signs}"
-                    SelectedIndex="{Binding SelectedVocabularySignIndex}"
-                    VerticalOptions="Center"
-                    VerticalTextAlignment="Center" />
                 <HorizontalStackLayout
                     x:Name="Nav"
                     Grid.Column="2"
@@ -84,7 +69,7 @@
                     <Button
                         x:Name="RecordButton"
                         BackgroundColor="{StaticResource Dark_Primary}"
-                        Command="{Binding RecordButton_ClickedCommand}"
+                        Clicked="RecordButton_Clicked"
                         Text="開始錄製">
                         <Button.Triggers>
                             <DataTrigger
@@ -120,7 +105,7 @@
                     Symbol="Menu"
                     VerticalOptions="Center">
                     <c:Icon.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="MenuButton_Tapped" />
+                        <TapGestureRecognizer Command="{Binding MenuButton_TappedCommand}" />
                     </c:Icon.GestureRecognizers>
                 </c:Icon>
             </Grid>
