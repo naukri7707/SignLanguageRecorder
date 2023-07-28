@@ -10,7 +10,7 @@
     CanBeDismissedByTappingOutsideOfPopup="True"
     Closed="Popup_Closed"
     Size="1000,700"
-    Color="Gray">
+    Color="Transparent">
     <VerticalStackLayout>
         <HorizontalStackLayout>
             <Picker
