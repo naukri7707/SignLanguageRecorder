@@ -178,7 +178,6 @@ public partial class RecordPageViewModel : ObservableObject
     public void OpenSavedataFolder()
     {
         string folderPath = FileSystem.AppDataDirectory;
-        // Todo : 支援多平台
         System.Diagnostics.Process.Start("explorer.exe", folderPath);
     }
 
