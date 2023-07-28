@@ -1,5 +1,6 @@
 ﻿global using SignLanguageRecorder.Abstrations;
 global using SignLanguageRecorder.Controls;
+global using SignLanguageRecorder.Exceptions;
 global using SignLanguageRecorder.Models;
 global using SignLanguageRecorder.Pages;
 global using SignLanguageRecorder.Services;
