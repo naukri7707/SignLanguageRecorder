@@ -1,9 +1,12 @@
 ﻿using Python.Runtime;
+using System.Diagnostics;
 
 namespace SignLanguageRecorder.Services
 {
     public class JointsRecognizerService
     {
+        public bool IsBusy { get; private set; }
+
         private PyModule scope;
 
         private PyDict members;
@@ -12,31 +15,48 @@ namespace SignLanguageRecorder.Services
 
         private readonly PythonService pythonService;
 
-        private readonly PyObject getSkeletonImagePyMethod;
+        private PyObject getSkeletonImagePyMethod;
 
-        private readonly PyObject createSkeletonVideoPyMethod;
+        private PyObject createSkeletonVideoPyMethod;
 
         public JointsRecognizerService(PreferencesService preferencesService, PythonService pythonService)
         {
             this.preferencesService = preferencesService;
             this.pythonService = pythonService;
+            _ = InitializeJointsRecognizer();
+        }
 
+        private async Task InitializeJointsRecognizer()
+        {
+            if (IsBusy)
+            {
+                throw new ServiceBusyException();
+            }
+
+            await Task.Yield();
+            IsBusy = true;
             var scriptPath = Path.Combine(preferencesService.PythonFolder, "Scripts", "JointsRecognizer.py");
-
-            scope = pythonService.CreateScope(
+            (scope, members) = await pythonService.CreateScope(
                 nameof(JointsRecognizerService),
-                scriptPath,
-                out members
+                scriptPath
                 );
             //
             getSkeletonImagePyMethod = members.GetItem("get_skeleton_image");
             createSkeletonVideoPyMethod = members.GetItem("create_skeleton_video");
+            IsBusy = false;
         }
 
-        public async void GetSkeletonImage(ImageSource imageSource)
+        public async Task GetSkeletonImage(ImageSource imageSource)
         {
+            if (IsBusy)
+            {
+                throw new ServiceBusyException();
+            }
+
+            await Task.Yield();
             using (Py.GIL())
             {
+                IsBusy = true;
                 // 必須在釋放前取得 image 的 byte[] 否則將無法讀寫
                 using var stream = await ((StreamImageSource)imageSource).Stream(CancellationToken.None);
                 using var memoryStream = new MemoryStream();
@@ -48,18 +68,25 @@ namespace SignLanguageRecorder.Services
 
                 // 取得處理後的 byte[]
                 var csHandledBytes = pyHandledBytes.AsManagedObject(typeof(byte[])) as byte[];
+                IsBusy = false;
             }
         }
 
-        public async void CreateSkeletonVideo(string sourceFilePath, string destinationFilePath, Action onCompleted = null)
+        public async Task CreateSkeletonVideo(string sourceFilePath, string destinationFilePath)
         {
+            if(IsBusy)
+            {
+                throw new ServiceBusyException($"{nameof(JointsRecognizerService)} 繁忙中，請稍號再試。");
+            }
+
+            await Task.Yield();
             using (Py.GIL())
             {
-                await Task.Yield();
+                IsBusy = true;
                 var src = sourceFilePath.ToPython();
                 var dst = destinationFilePath.ToPython();
                 createSkeletonVideoPyMethod.Invoke(src, dst);
-                onCompleted?.Invoke();
+                IsBusy = false;
             }
         }
     }
