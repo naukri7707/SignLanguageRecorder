@@ -7,6 +7,8 @@ namespace SignLanguageRecorder.Services
     {
         public bool IsBusy { get; private set; }
 
+        public bool IsInitialized { get; private set; }
+
         private PyModule scope;
 
         private PyDict members;
@@ -23,14 +25,18 @@ namespace SignLanguageRecorder.Services
         {
             this.preferencesService = preferencesService;
             this.pythonService = pythonService;
-            _ = InitializeJointsRecognizer();
         }
 
-        private async Task InitializeJointsRecognizer()
+        public async Task Initialize()
         {
             if (IsBusy)
             {
-                throw new ServiceBusyException();
+                throw new ServiceIsBusyException();
+            }
+
+            if (IsInitialized)
+            {
+                return;
             }
 
             await Task.Yield();
@@ -43,6 +49,8 @@ namespace SignLanguageRecorder.Services
             //
             getSkeletonImagePyMethod = members.GetItem("get_skeleton_image");
             createSkeletonVideoPyMethod = members.GetItem("create_skeleton_video");
+
+            IsInitialized = true;
             IsBusy = false;
         }
 
@@ -50,7 +58,12 @@ namespace SignLanguageRecorder.Services
         {
             if (IsBusy)
             {
-                throw new ServiceBusyException();
+                throw new ServiceIsBusyException();
+            }
+
+            if (!IsInitialized)
+            {
+                throw new ServiceNotInitializedException();
             }
 
             await Task.Yield();
@@ -74,9 +87,14 @@ namespace SignLanguageRecorder.Services
 
         public async Task CreateSkeletonVideo(string sourceFilePath, string destinationFilePath)
         {
-            if(IsBusy)
+            if (IsBusy)
             {
-                throw new ServiceBusyException($"{nameof(JointsRecognizerService)} 繁忙中，請稍號再試。");
+                throw new ServiceIsBusyException($"{nameof(JointsRecognizerService)} 繁忙中，請稍號再試。");
+            }
+
+            if (!IsInitialized)
+            {
+                throw new ServiceNotInitializedException();
             }
 
             await Task.Yield();
