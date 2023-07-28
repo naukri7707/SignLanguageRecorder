@@ -72,7 +72,7 @@ public class Icon : Label
     /// </summary>
     /// <param name="fontFile">字形檔在專案建置後中的路徑</param>
     /// <param name="fontName">字形檔確切名稱 (在字形檔案右鍵 -> 預覽中可以查看)</param>
-    public static void FixUnpackAppMissingFont(string fontFile, string fontName)
+    public static void FixUnpackAppMissingFontFamily(string fontFile, string fontName)
     {
         var fontFamily = $"ms-appx:///{fontFile}#{fontName}";
 #if WINDOWS
@@ -82,6 +82,7 @@ public class Icon : Label
             {
                 if (element is Icon icon)
                 {
+                    handler.PlatformView.FontFamily = new Microsoft.UI.Xaml.Media.FontFamily(fontFamily);
                     icon.FontFamily = fontFamily;
                 }
             }

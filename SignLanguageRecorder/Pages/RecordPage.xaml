@@ -69,7 +69,7 @@
                     <Button
                         x:Name="RecordButton"
                         BackgroundColor="{StaticResource Dark_Primary}"
-                        Command="{Binding RecordButton_ClickedCommand}"
+                        Clicked="RecordButton_Clicked"
                         Text="開始錄製">
                         <Button.Triggers>
                             <DataTrigger
@@ -105,7 +105,7 @@
                     Symbol="Menu"
                     VerticalOptions="Center">
                     <c:Icon.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="MenuButton_Tapped" />
+                        <TapGestureRecognizer Command="{Binding MenuButton_TappedCommand}" />
                     </c:Icon.GestureRecognizers>
                 </c:Icon>
             </Grid>

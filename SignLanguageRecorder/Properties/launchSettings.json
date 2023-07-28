@@ -1,6 +1,8 @@
 ﻿{
-  "Build (Portable)": {
-    "commandName": "Project",
-    "nativeDebugging": false
+  "profiles": {
+    "Build (Portable)": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
   }
 }

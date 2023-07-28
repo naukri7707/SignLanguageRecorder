@@ -1,53 +1,55 @@
-﻿using System.ComponentModel;
-
-namespace SignLanguageRecorder.ViewModels;
+﻿namespace SignLanguageRecorder.ViewModels;
 
 public partial class RecordPageViewModel : ObservableObject
 {
     public interface IRequirement
     {
         public Grid RecorderContainer { get; }
-
-        public Recorder[] Recorders { get; }
     }
 
     private readonly IRequirement requirement;
 
+    private readonly DialogService dialogService;
+
     private readonly DatabaseService databaseService;
 
-    private readonly RecorderLayoutService recorderLayoutService;
+    private readonly RecordService recordService;
 
     [ObservableProperty]
     private bool isRecording;
-
-    public int CamCount { get; private set; } = 1;
 
     public ObservableCollection<VocabularyInfo> VocabularyInfos { get; } = new();
 
     [ObservableProperty]
     private VocabularyInfo selectedVocabularyInfo;
 
+    public event Action LayoutChanged = () => { };
+
+    public int ActivedRecorderCount => recordService.ActivedRecorderCount;
+
     public RecordPageViewModel(IRequirement requirement) : this(
         requirement,
+        Dependency.Inject<DialogService>(),
         Dependency.Inject<DatabaseService>(),
-        Dependency.Inject<RecorderLayoutService>()
+        Dependency.Inject<RecordService>()
         )
     { }
 
-    public RecordPageViewModel(IRequirement requirement, DatabaseService databaseService, RecorderLayoutService recorderLayoutService)
+    public RecordPageViewModel(IRequirement requirement, DialogService dialogService, DatabaseService databaseService, RecordService recordService)
     {
         this.requirement = requirement;
+        this.dialogService = dialogService;
         this.databaseService = databaseService;
-        this.recorderLayoutService = recorderLayoutService;
-        //
-        for (int i = 0; i < requirement.Recorders.Length; i++)
+        this.recordService = recordService;
+
+        foreach (var recorder in recordService.Recorders)
         {
-            var recorder = requirement.Recorders[i];
-            if(string.IsNullOrEmpty(recorder.ViewModel.RecorderName))
-            {
-                recorder.ViewModel.RecorderName = $"Cam {i}";
-            }
+            requirement.RecorderContainer.Children.Add(recorder);
         }
+        recordService.OnRecordStateChanged += newState =>
+        {
+            IsRecording = newState;
+        };
     }
 
     public async void UpdateVocabularies(Action onUpdated = null)
@@ -69,36 +71,105 @@ public partial class RecordPageViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    public async void RecordButton_Clicked()
+    public void Record()
     {
-        await Task.Yield();
-        var recorders = requirement.Recorders;
-        for (int i = 0; i < CamCount; i++)
-        {
-            var recorder = recorders[i];
-
-            if (IsRecording)
-            {
-                _ = recorder.ViewModel.StopRecordAsync();
-            }
-            else
-            {
-                var videoName = SelectedVocabularyInfo.Name;
-                _ = recorder.ViewModel.StartRecordAsync(videoName);
-            }
-        }
-        IsRecording = !IsRecording;
+        var name = SelectedVocabularyInfo.Name;
+        recordService.StartRecording(name);
     }
 
-    public bool TrySetCamCount(int camCount)
+    public void Stop()
     {
-        if (camCount > 0 && camCount <= 16)
+        recordService.StopRecording();
+    }
+
+    [RelayCommand]
+    private async void MenuButton_Tapped()
+    {
+        Task<string> DisplayLayoutPicker()
         {
-            CamCount = camCount;
+            var layouts = recordService.GetLayoutNames();
+            return dialogService.DisplayActionSheet("選擇佈局", null, null, layouts);
+        }
+
+        var result = await dialogService.DisplayActionSheet("選擇動作", null, null, "設定攝影機數量", "載入佈局", "儲存佈局", "刪除佈局", "開啟儲存位置");
+        switch (result)
+        {
+            case "設定攝影機數量":
+                var newCamCountText = await dialogService.DisplayPromptAsync(
+                    "攝影機數量", null, "確定", "取消", "攝影機數量", 2,
+                    Keyboard.Numeric, recordService.ActivedRecorderCount.ToString()
+                    );
+                // 取消
+                if (newCamCountText == null)
+                {
+                    break;
+                }
+                // 可以轉換成數字
+                else if (int.TryParse(newCamCountText, out var newRecorderCount))
+                {
+                    if (TrySetActivedRecorderCount(newRecorderCount))
+                    {
+                        LayoutChanged.Invoke();
+                    }
+                    else
+                    {
+                        await dialogService.DisplayAlert("錯誤", "攝影機數量必須在1~16之間", "確定");
+                    }
+                }
+                // 不能轉換為數字時
+                else
+                {
+                    await dialogService.DisplayAlert("錯誤", "攝影機數量必須是正整數", "確定");
+                }
+
+                break;
+            case "載入佈局":
+                var targetLoadLayout = await DisplayLayoutPicker();
+                // 沒有取消時
+                if (targetLoadLayout != null)
+                {
+                    if (LoadLayout(targetLoadLayout))
+                    {
+                        LayoutChanged.Invoke();
+                    }
+                }
+                break;
+            case "儲存佈局":
+                var layoutName = await dialogService.DisplayPromptAsync("儲存佈局", "佈局名稱", "確定", "取消", "佈局名稱", -1, Keyboard.Text);
+
+                // 沒有取消時
+                if (layoutName != null)
+                {
+                    recordService.SaveLayout(layoutName);
+                }
+                break;
+            case "刪除佈局":
+                var targetDeleteLayout = await DisplayLayoutPicker();
+                // 沒有取消時
+                if (targetDeleteLayout != null)
+                {
+                    if (recordService.DeleteLayout(targetDeleteLayout))
+                    {
+                        await dialogService.DisplayAlert("完成", $"{targetDeleteLayout} 已", "確定");
+                    }
+                }
+                break;
+            case "開啟儲存位置":
+                OpenSavedataFolder();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public bool TrySetActivedRecorderCount(int recorderCount)
+    {
+        try
+        {
+            recordService.ActivedRecorderCount = recorderCount;
             return true;
         }
-        else
+        catch
         {
             return false;
         }
@@ -113,39 +184,18 @@ public partial class RecordPageViewModel : ObservableObject
 
     public void SaveLayout(string layoutName)
     {
-        var infos = requirement.Recorders
-            .Select(recorder => recorder.ViewModel.GetInfo())
-            .Take(CamCount)
-            .ToArray();
-        recorderLayoutService.SaveLayout(layoutName, infos);
+        recordService.SaveLayout(layoutName);
     }
 
     public bool LoadLayout(string layoutName)
     {
-        var layout = recorderLayoutService.LoadLayout(layoutName);
-
-        if (layout == null)
-        {
-            return false;
-        }
-
-        CamCount = layout.Infos.Length;
-        for (var i = 0; i < CamCount; i++)
-        {
-            var info = layout.Infos[i];
-            requirement.Recorders[i].ViewModel.SetInfo(info);
-        }
-        return true;
+        return recordService.LoadLayout(layoutName);
     }
+
 
     public bool DeleteLayout(string layoutName)
     {
-        return recorderLayoutService.DeleteLayout(layoutName);
-    }
-
-    public string[] GetLayoutNames()
-    {
-        return recorderLayoutService.GetLayoutNames();
+        return recordService.DeleteLayout(layoutName);
     }
 }
 

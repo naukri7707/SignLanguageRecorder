@@ -10,7 +10,7 @@
     CanBeDismissedByTappingOutsideOfPopup="True"
     Closed="Popup_Closed"
     Size="800,600"
-    Color="Gray">
+    Color="Transparent">
     <AbsoluteLayout
         Margin="10"
         HeightRequest="600"

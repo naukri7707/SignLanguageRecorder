@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Views;
+using System.Diagnostics;
 
 namespace SignLanguageRecorder.ViewModels;
 
@@ -9,6 +11,8 @@ public partial class ReplayPopupViewModel : ObservableObject
     }
 
     private readonly IRequirement requirement;
+
+    private readonly DialogService dialogService;
 
     private readonly PreferencesService preferencesService;
 
@@ -54,15 +58,17 @@ public partial class ReplayPopupViewModel : ObservableObject
     public ReplayPopupViewModel(IRequirement requirement, string videoName) : this(
         requirement,
         videoName,
+        Dependency.Inject<DialogService>(),
         Dependency.Inject<PreferencesService>(),
         Dependency.Inject<JointsRecognizerService>()
         )
     { }
 
-    public ReplayPopupViewModel(IRequirement requirement, string videoName, PreferencesService preferencesService, JointsRecognizerService jointsRecognizerService)
+    public ReplayPopupViewModel(IRequirement requirement, string videoName, DialogService dialogService, PreferencesService preferencesService, JointsRecognizerService jointsRecognizerService)
     {
         this.requirement = requirement;
         VideoName = videoName;
+        this.dialogService = dialogService;
         this.preferencesService = preferencesService;
         this.jointsRecognizerService = jointsRecognizerService;
         //
@@ -95,44 +101,30 @@ public partial class ReplayPopupViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void LoadSkeletonVideo()
+    public async void LoadSkeletonVideo()
     {
         if (!File.Exists(SkeletonVideoPath))
         {
-            var directoryPath = Path.GetDirectoryName(SkeletonVideoPath);
-            Directory.CreateDirectory(directoryPath);
-
-            IsBusy = true;
-            jointsRecognizerService.CreateSkeletonVideo(
-            SourceVideoPath,
-            SkeletonVideoPath,
-            () =>
+            try
             {
-                MainThread.BeginInvokeOnMainThread(async () =>
+                IsBusy = true;
+                var directoryPath = Path.GetDirectoryName(SkeletonVideoPath);
+                Directory.CreateDirectory(directoryPath);
+                await jointsRecognizerService.CreateSkeletonVideo(SourceVideoPath, SkeletonVideoPath);
+                LoadVideo(SkeletonVideoPath);
+                IsBusy = false;
+            }
+            catch (Exception ex)
+            {
+                if (ex is ServiceIsBusyException serviceBusyException)
                 {
-                    for (var i = 0; i < 10; i++)
-                    {
-                        try
-                        {
-                            LoadVideo(SkeletonVideoPath);
-                            break;
-                        }
-                        catch
-                        {
-                            await Task.Delay(1000);
-                        }
-                    }
-
-                    IsBusy = false;
-                });
-            });
+                    await dialogService.DisplayAlert("訊息", serviceBusyException.Message, "確認");
+                }
+            }
         }
-
-
-        LoadVideo(SkeletonVideoPath);
     }
 
-    public void LoadVideo(string videoPath)
+    public async void LoadVideo(string videoPath)
     {
         if (File.Exists(videoPath))
         {
@@ -140,7 +132,7 @@ public partial class ReplayPopupViewModel : ObservableObject
         }
         else
         {
-            Application.Current.MainPage.DisplayAlert("錯誤", $"找不到影片\r\n{videoPath}", "OK");
+            await dialogService.DisplayAlert("錯誤", $"找不到影片\r\n{videoPath}", "確認");
         }
     }
 }
