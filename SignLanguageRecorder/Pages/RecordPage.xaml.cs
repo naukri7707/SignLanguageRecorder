@@ -43,6 +43,20 @@ public partial class RecordPage : ContentPage,
         var result = await this.ShowPopupAsync(demoPopup);
     }
 
+    private async void RecordButton_Clicked(object sender, EventArgs e)
+    {
+        if(ViewModel.IsRecording)
+        {
+            ViewModel.Stop();
+        }
+        else
+        {
+            var countDownPopup = new CountDownPopup(3);
+            var result = await this.ShowPopupAsync(countDownPopup);
+            ViewModel.Record();
+        }
+    }
+
     private void RecorderContainer_SizeChanged(object sender, EventArgs e)
     {
         RefreshRecorders();

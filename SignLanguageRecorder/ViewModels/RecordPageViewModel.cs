@@ -46,6 +46,10 @@ public partial class RecordPageViewModel : ObservableObject
         {
             requirement.RecorderContainer.Children.Add(recorder);
         }
+        recordService.OnRecordStateChanged += newState =>
+        {
+            IsRecording = newState;
+        };
     }
 
     public async void UpdateVocabularies(Action onUpdated = null)
@@ -67,26 +71,15 @@ public partial class RecordPageViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    private void RecordButton_Clicked()
+    public void Record()
     {
-        try
-        {
-            if (recordService.IsRecording)
-            {
-                var name = SelectedVocabularyInfo.Name;
-                recordService.StartRecording(name);
-            }
-            else
-            {
-                recordService.StopRecording();
-            }
+        var name = SelectedVocabularyInfo.Name;
+        recordService.StartRecording(name);
+    }
 
-        }
-        catch (Exception ex)
-        {
-            dialogService.Toast(ex.Message);
-        }
+    public void Stop()
+    {
+        recordService.StopRecording();
     }
 
     [RelayCommand]

@@ -17,8 +17,6 @@ public partial class RecorderViewModel : ObservableObject
 
     private readonly IRequirement requirement;
 
-    private readonly PreferencesService preferencesService;
-
     [ObservableProperty]
     private string recorderName;
 
@@ -30,16 +28,9 @@ public partial class RecorderViewModel : ObservableObject
 
     public string[] MicrophoneNameOptions => new[] { DISABLED_NAME }.Concat(requirement.CameraView.Microphones.Select(it => it.Name)).ToArray();
 
-    public RecorderViewModel(IRequirement requirement) : this(
-        requirement,
-        Dependency.Inject<PreferencesService>()
-        )
-    { }
-
-    public RecorderViewModel(IRequirement requirement, PreferencesService preferencesService)
+    public RecorderViewModel(IRequirement requirement)
     {
         this.requirement = requirement;
-        this.preferencesService = preferencesService;
     }
 
     public void EnableQRCodeScanner(CameraView cameraView)
@@ -58,35 +49,10 @@ public partial class RecorderViewModel : ObservableObject
         cameraView.BarCodeDetectionEnabled = true;
     }
 
-    public async Task<CameraResult> StartRecordAsync(string videoName)
+    public async Task<CameraResult> StartRecordAsync(string fileName)
     {
         var cameraView = requirement.CameraView;
-        // Todo 用專用的 Service 繪製
-        if (cameraView.Camera == null)
-        {
-            await Application.Current.MainPage.DisplayAlert("錯誤", $"{RecorderName}沒有指定攝影機", "OK");
-            return CameraResult.NoCameraSelected;
-        }
-
-        if (cameraView.Microphone == null)
-        {
-            await Application.Current.MainPage.DisplayAlert("錯誤", $"{RecorderName}沒有指定麥克風", "OK");
-            return CameraResult.NoMicrophoneSelected;
-        }
-
-        var userFolder = preferencesService.UsersFolder;
-        var userName = preferencesService.UserName;
-
-        var folderPath = Path.Combine(userFolder, userName, "Source", RecorderName);
-
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-        }
-
-        var filePath = Path.Combine(folderPath, $"{videoName}.mp4");
-
-        var result = await cameraView.StartRecordingAsync(filePath);
+        var result = await cameraView.StartRecordingAsync(fileName, new Size(1920, 1080));
         return result;
     }
 
