@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Maui.Views;
-using System.Runtime.CompilerServices;
 
 namespace SignLanguageRecorder.Pages;
 
@@ -16,36 +15,31 @@ public partial class RecordPage : ContentPage,
         ViewModel.LayoutChanged += RefreshRecorders;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        ViewModel.UpdateVocabularies(() =>
-        {
-            if (ViewModel.SelectedVocabularyInfo == null)
-            {
-                ViewModel.SelectedVocabularyInfo = ViewModel.VocabularyInfos.FirstOrDefault();
-            }
-        });
+        await ViewModel.GetVocabularies();
     }
 
     private async void WatchReplayButton_Clicked(object sender, EventArgs e)
     {
-        var videoName = ViewModel.SelectedVocabularyInfo.Name;
+        var videoName = ViewModel.SelectedVocabularyCard.Name;
         var replayPopup = new ReplayPopup(videoName);
         var result = await this.ShowPopupAsync(replayPopup);
+        ViewModel.SelectedVocabularyCard.UpdateCompletion();
     }
 
     private async void WatchDemoButton_Clicked(object sender, EventArgs e)
     {
         var demoPopup = new MediaPlayerPopup();
-        var videoName = ViewModel.SelectedVocabularyInfo.Name;
+        var videoName = ViewModel.SelectedVocabularyCard.Name;
         demoPopup.ViewModel.LoadDemo(videoName);
         var result = await this.ShowPopupAsync(demoPopup);
     }
 
     private async void RecordButton_Clicked(object sender, EventArgs e)
     {
-        if(ViewModel.IsRecording)
+        if (ViewModel.IsRecording)
         {
             ViewModel.Stop();
         }
