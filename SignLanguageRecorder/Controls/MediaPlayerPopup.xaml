@@ -15,6 +15,13 @@
         Margin="10"
         HeightRequest="600"
         WidthRequest="800">
+        <VerticalStackLayout
+            x:Name="NoVideoSourceFoundLayout"
+            AbsoluteLayout.LayoutBounds="0.5, 0.5, -1, -1"
+            AbsoluteLayout.LayoutFlags="PositionProportional">
+            <Label FontSize="128" Text=":(" />
+            <Label FontSize="Large" Text="沒有找到影片" />
+        </VerticalStackLayout>
         <tk:MediaElement
             x:Name="MediaPlayer"
             AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
