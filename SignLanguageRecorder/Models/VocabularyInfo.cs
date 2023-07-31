@@ -1,5 +1,4 @@
 ﻿using LiteDB;
-using Microsoft.Maui.Controls;
 
 namespace SignLanguageRecorder.Models;
 
