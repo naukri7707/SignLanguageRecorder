@@ -9,21 +9,33 @@
     x:DataType="vm:ReplayPopupViewModel"
     CanBeDismissedByTappingOutsideOfPopup="True"
     Closed="Popup_Closed"
-    Size="1000,700"
-    Color="Transparent">
+    Size="1024,768"
+    Color="{StaticResource Dark_Surface}">
     <VerticalStackLayout>
+        <Label FontSize="Large" Text="我的重播" />
         <HorizontalStackLayout>
             <Picker
                 x:Name="FileNamePicker"
-                ItemsSource="{Binding FileNames}"
-                SelectedIndex="{Binding SelectedFileIndex}" />
-            <Button Command="{Binding LoadSourceVideoCommand}" Text="Source" />
-            <Button Command="{Binding LoadSkeletonVideoCommand}" Text="Skeleton" />
+                ItemsSource="{Binding CameraNames}"
+                SelectedIndexChanged="FileNamePicker_SelectedIndexChanged"
+                SelectedItem="{Binding SelectedCameraName}" />
+            <CheckBox
+                x:Name="ShowSkeletonCheckbox"
+                CheckedChanged="ShowSkeletonCheckbox_CheckedChanged"
+                IsChecked="{Binding IsSkeletonShow}" />
+            <Label Text="顯示骨架" />
         </HorizontalStackLayout>
         <AbsoluteLayout
             Margin="10"
             HeightRequest="600"
             WidthRequest="800">
+            <VerticalStackLayout
+                x:Name="NoVideoSourceFoundLayout"
+                AbsoluteLayout.LayoutBounds="0.5, 0.5, -1, -1"
+                AbsoluteLayout.LayoutFlags="PositionProportional">
+                <Label FontSize="128" Text=":(" />
+                <Label FontSize="Large" Text="沒有找到影片" />
+            </VerticalStackLayout>
             <tk:MediaElement
                 x:Name="MediaPlayer"
                 AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
