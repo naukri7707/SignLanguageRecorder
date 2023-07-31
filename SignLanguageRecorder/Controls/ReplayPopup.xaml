@@ -12,7 +12,17 @@
     Size="1024,768"
     Color="{StaticResource Dark_Surface}">
     <VerticalStackLayout>
-        <Label FontSize="Large" Text="我的重播" />
+        <Grid ColumnDefinitions="*, auto">
+            <Label
+                Grid.Column="0"
+                FontSize="Large"
+                Text="我的重播" />
+            <Button
+                Grid.Column="1"
+                BackgroundColor="{StaticResource Dark_ErrorContainer}"
+                Command="{Binding DeleteReplayCommand}"
+                Text="刪除重播" />
+        </Grid>
         <HorizontalStackLayout>
             <Picker
                 x:Name="FileNamePicker"
@@ -23,7 +33,7 @@
                 x:Name="ShowSkeletonCheckbox"
                 CheckedChanged="ShowSkeletonCheckbox_CheckedChanged"
                 IsChecked="{Binding IsSkeletonShow}" />
-            <Label Text="顯示骨架" />
+            <Label Text="顯示骨架" VerticalTextAlignment="Center" />
         </HorizontalStackLayout>
         <AbsoluteLayout
             Margin="10"

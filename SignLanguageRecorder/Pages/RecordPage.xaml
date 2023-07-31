@@ -13,8 +13,8 @@
         <Grid FlexLayout.Basis="Auto">
             <CollectionView
                 x:Name="VocabulariesView"
-                ItemsSource="{Binding VocabularyInfos}"
-                SelectedItem="{Binding SelectedVocabularyInfo}"
+                ItemsSource="{Binding VocabularyCards}"
+                SelectedItem="{Binding SelectedVocabularyCard}"
                 SelectionMode="Single"
                 VerticalScrollBarVisibility="Always">
                 <!--  EmptyView  -->
@@ -34,19 +34,8 @@
                 </CollectionView.ItemsLayout>
                 <!--  ItemTemplate  -->
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="m:VocabularyInfo">
-                        <Grid
-                            Padding="10"
-                            ColumnDefinitions="auto, 150"
-                            ColumnSpacing="10">
-                            <c:Icon
-                                Grid.Column="0"
-                                IconSize="Small"
-                                Symbol="CircleMedium" />
-                            <HorizontalStackLayout Grid.Column="1">
-                                <Label Text="{Binding Name}" />
-                            </HorizontalStackLayout>
-                        </Grid>
+                    <DataTemplate x:DataType="vm:VocabularyCardViewModel">
+                        <c:VocabularyCard BindingContext="{Binding .}" />
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
@@ -58,7 +47,7 @@
                 <Label
                     Grid.Column="0"
                     FontSize="Large"
-                    Text="{Binding SelectedVocabularyInfo.Name}"
+                    Text="{Binding SelectedVocabularyCard.Name}"
                     VerticalOptions="Center"
                     VerticalTextAlignment="Center" />
                 <HorizontalStackLayout

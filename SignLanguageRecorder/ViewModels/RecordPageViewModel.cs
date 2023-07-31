@@ -9,19 +9,21 @@ public partial class RecordPageViewModel : ObservableObject
 
     private readonly IRequirement requirement;
 
+    private readonly PreferencesService preferencesService;
+
     private readonly DialogService dialogService;
 
-    private readonly DatabaseService databaseService;
+    private readonly VocabularyService vocabularyService;
 
     private readonly RecordService recordService;
 
     [ObservableProperty]
     private bool isRecording;
 
-    public ObservableCollection<VocabularyInfo> VocabularyInfos { get; } = new();
+    public ObservableCollection<VocabularyCardViewModel> VocabularyCards { get; } = new();
 
     [ObservableProperty]
-    private VocabularyInfo selectedVocabularyInfo;
+    private VocabularyCardViewModel selectedVocabularyCard;
 
     public event Action LayoutChanged = () => { };
 
@@ -29,17 +31,19 @@ public partial class RecordPageViewModel : ObservableObject
 
     public RecordPageViewModel(IRequirement requirement) : this(
         requirement,
+        Dependency.Inject<PreferencesService>(),
         Dependency.Inject<DialogService>(),
-        Dependency.Inject<DatabaseService>(),
+        Dependency.Inject<VocabularyService>(),
         Dependency.Inject<RecordService>()
         )
     { }
 
-    public RecordPageViewModel(IRequirement requirement, DialogService dialogService, DatabaseService databaseService, RecordService recordService)
+    public RecordPageViewModel(IRequirement requirement, PreferencesService preferencesService, DialogService dialogService, VocabularyService vocabularyService, RecordService recordService)
     {
         this.requirement = requirement;
+        this.preferencesService = preferencesService;
         this.dialogService = dialogService;
-        this.databaseService = databaseService;
+        this.vocabularyService = vocabularyService;
         this.recordService = recordService;
 
         foreach (var recorder in recordService.Recorders)
@@ -52,33 +56,34 @@ public partial class RecordPageViewModel : ObservableObject
         };
     }
 
-    public async void UpdateVocabularies(Action onUpdated = null)
+    public async Task GetVocabularies()
     {
         await Task.Yield();
-        lock (databaseService)
+
+        var vocabularyInfos = await vocabularyService.GetVocabularyInfos();
+        
+        foreach (var info in vocabularyInfos)
         {
-            using var db = databaseService.GetLiteDatabase();
-            var collection = db.GetCollection<VocabularyInfo>();
-
-            VocabularyInfos.Clear();
-
-            foreach (var task in collection.FindAll())
+            var card = new VocabularyCardViewModel
             {
-                VocabularyInfos.Add(task);
-            }
-
-            onUpdated?.Invoke();
+                Name = info.Name,
+            };
+            card.UpdateCompletion();
+            VocabularyCards.Add(card);
         }
-    }
 
+        SelectedVocabularyCard = VocabularyCards.FirstOrDefault();
+    }
+    
     public void Record()
     {
-        var name = SelectedVocabularyInfo.Name;
+        var name = SelectedVocabularyCard.Name;
         recordService.StartRecording(name);
     }
 
     public void Stop()
     {
+        SelectedVocabularyCard.UpdateCompletion();
         recordService.StopRecording();
     }
 

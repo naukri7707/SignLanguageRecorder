@@ -34,12 +34,12 @@ public class RecordService
 
     private bool isRecording;
 
-    public bool IsRecording 
-    { 
+    public bool IsRecording
+    {
         get => isRecording;
-        private set 
+        private set
         {
-            if(value != isRecording)
+            if (value != isRecording)
             {
                 isRecording = value;
                 OnRecordStateChanged(value);
@@ -47,7 +47,7 @@ public class RecordService
         }
     }
 
-    public event Action<bool> OnRecordStateChanged = s => {};
+    public event Action<bool> OnRecordStateChanged = s => { };
 
     public RecordService() : this(
         Dependency.Inject<PreferencesService>(),
@@ -56,7 +56,7 @@ public class RecordService
         )
     { }
 
-    public RecordService(PreferencesService preferencesService,DatabaseService databaseService, DialogService dialogService)
+    public RecordService(PreferencesService preferencesService, DatabaseService databaseService, DialogService dialogService)
     {
         this.preferencesService = preferencesService;
         this.databaseService = databaseService;
@@ -101,7 +101,7 @@ public class RecordService
         {
             var recorderName = recorder.ViewModel.RecorderName;
             var fileName = Path.Combine(folderPath, $"{videoName}_{recorderName}.mp4");
-            if(File.Exists(fileName))
+            if (File.Exists(fileName))
             {
                 existedList.Append(fileName);
                 existedList.Append('\n');
@@ -122,7 +122,7 @@ public class RecordService
         foreach (var recorder in recorders)
         {
             var recorderName = recorder.ViewModel.RecorderName;
-            
+
             var fileName = Path.Combine(folderPath, $"{videoName}_{recorderName}.mp4");
             var task = recorder.ViewModel.StartRecordAsync(fileName);
 

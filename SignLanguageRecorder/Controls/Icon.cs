@@ -1,10 +1,51 @@
-﻿using SignLanguageRecorder.Utilities;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace SignLanguageRecorder.Controls;
 
 public class Icon : Label
 {
+    public static readonly BindableProperty SymbolProperty = BindableProperty.Create(
+    nameof(Symbol),
+    typeof(IconSymbol),
+    typeof(Icon),
+    default(IconSymbol),
+    propertyChanged: OnSymbolPropertyChanged
+    );
+
+    public static readonly BindableProperty IconColorProperty = BindableProperty.Create(
+        nameof(IconColor),
+        typeof(Color),
+        typeof(Icon),
+        default(Color),
+        propertyChanged: OnIconColorPropertyChanged
+        );
+
+    public static readonly BindableProperty IconSizeProperty = BindableProperty.Create(
+        nameof(IconSize),
+        typeof(IconSize),
+        typeof(Icon),
+        default(IconSize),
+        propertyChanged: OnIconSizePropertyChanged
+        );
+
+    private static void OnSymbolPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var control = (Icon)bindable;
+        control.Symbol = (IconSymbol)newValue;
+    }
+
+    private static void OnIconColorPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var control = (Icon)bindable;
+        control.IconColor = (Color)newValue;
+    }
+
+    private static void OnIconSizePropertyChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var control = (Icon)bindable;
+        control.IconSize = (IconSize)newValue;
+    }
+
     internal const string UsingFontFamilyName = "MaterialDesignIcon";
 
     private IconSymbol symbol;
@@ -14,21 +55,40 @@ public class Icon : Label
         get => symbol;
         set
         {
+            if (symbol == value)
+                return;
             symbol = value;
             Text = value.GetGlyphCode();
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(Text));
         }
     }
 
     public Color IconColor
     {
         get => TextColor;
-        set => TextColor = value;
+        set
+        {
+            if (TextColor == value)
+                return;
+            TextColor = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(TextColor));
+        }
     }
 
     public IconSize IconSize
     {
         get => (IconSize)(int)FontSize;
-        set => FontSize = (int)value;
+        set
+        {
+            var intValue = (int)value;
+            if (FontSize == intValue)
+                return;
+            FontSize = intValue;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(FontSize));
+        }
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]

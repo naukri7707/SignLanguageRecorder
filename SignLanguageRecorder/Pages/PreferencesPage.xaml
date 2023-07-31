@@ -4,29 +4,40 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:c="clr-namespace:SignLanguageRecorder.Controls"
+    xmlns:tk="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:SignLanguageRecorder.ViewModels"
     Title="PreferencesPage"
     x:DataType="vm:PreferencesPageViewModel">
-    <VerticalStackLayout>
+    <VerticalStackLayout Margin="5">
         <Label FontSize="Title" Text="Preferences" />
-        <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
+        <Grid
+            Margin="20,0,0,0"
+            ColumnDefinitions="*,2*"
+            RowDefinitions="auto,auto,auto,auto"
+            RowSpacing="3">
+            <!--  User Name  -->
             <Label
+                Grid.Row="0"
                 Grid.Column="0"
                 Text="User Name"
                 VerticalTextAlignment="Center" />
             <Grid Grid.Column="1" ColumnDefinitions="*,auto">
                 <Entry
                     x:Name="UserNameEntry"
+                    Grid.Row="0"
                     Grid.Column="0"
                     HorizontalOptions="FillAndExpand" />
             </Grid>
-        </Grid>
-        <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
+            <!--  Users Folder  -->
             <Label
+                Grid.Row="1"
                 Grid.Column="0"
                 Text="Users Folder"
                 VerticalTextAlignment="Center" />
-            <Grid Grid.Column="1" ColumnDefinitions="*,auto">
+            <Grid
+                Grid.Row="1"
+                Grid.Column="1"
+                ColumnDefinitions="*,auto">
                 <Entry
                     x:Name="UsersFolderEntry"
                     Grid.Column="0"
@@ -37,13 +48,16 @@
                     </c:Icon.GestureRecognizers>
                 </c:Icon>
             </Grid>
-        </Grid>
-        <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
+            <!--  Demo Folder  -->
             <Label
+                Grid.Row="2"
                 Grid.Column="0"
                 Text="Demo Folder"
                 VerticalTextAlignment="Center" />
-            <Grid Grid.Column="1" ColumnDefinitions="*,auto">
+            <Grid
+                Grid.Row="2"
+                Grid.Column="1"
+                ColumnDefinitions="*,auto">
                 <Entry
                     x:Name="DemoFolderEntry"
                     Grid.Column="0"
@@ -54,13 +68,16 @@
                     </c:Icon.GestureRecognizers>
                 </c:Icon>
             </Grid>
-        </Grid>
-        <Grid Margin="20,0,20,0" ColumnDefinitions="*,2*">
+            <!--  Python Folder  -->
             <Label
+                Grid.Row="3"
                 Grid.Column="0"
                 Text="Python Folder"
                 VerticalTextAlignment="Center" />
-            <Grid Grid.Column="1" ColumnDefinitions="*,auto">
+            <Grid
+                Grid.Row="3"
+                Grid.Column="1"
+                ColumnDefinitions="*,auto">
                 <Entry
                     x:Name="PythonFolderEntry"
                     Grid.Column="0"
@@ -72,22 +89,22 @@
                 </c:Icon>
             </Grid>
         </Grid>
-        <HorizontalStackLayout>
+        <tk:UniformItemsLayout>
             <Button Command="{Binding SaveCommand}" Text="Save" />
             <Button
                 BackgroundColor="Red"
                 Command="{Binding ResetCommand}"
                 Text="Reset" />
-        </HorizontalStackLayout>
+        </tk:UniformItemsLayout>
         <Label FontSize="Title" Text="Data" />
         <Label FontSize="Subtitle" Text="Vocabulary Infos" />
-        <HorizontalStackLayout>
+        <tk:UniformItemsLayout>
             <Button Command="{Binding LoadVocabularyInfosCommand}" Text="Load" />
             <Button Command="{Binding DumpVocabularyInfosCommand}" Text="Dump" />
             <Button
                 BackgroundColor="Red"
                 Command="{Binding DropVocabularyInfosCommand}"
                 Text="Drop" />
-        </HorizontalStackLayout>
+        </tk:UniformItemsLayout>
     </VerticalStackLayout>
 </ContentPage>
