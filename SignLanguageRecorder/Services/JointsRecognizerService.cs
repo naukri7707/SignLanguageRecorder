@@ -101,6 +101,19 @@ namespace SignLanguageRecorder.Services
             using (Py.GIL())
             {
                 IsBusy = true;
+
+                if (!File.Exists(sourceFilePath))
+                {
+                    throw new Exception($"檔案 {sourceFilePath} 不存在。");
+                }
+
+                var destinationFolderPath = Path.GetDirectoryName(destinationFilePath);
+
+                if (!Directory.Exists(destinationFolderPath))
+                {
+                    Directory.CreateDirectory(destinationFolderPath);
+                }
+
                 var src = sourceFilePath.ToPython();
                 var dst = destinationFilePath.ToPython();
                 createSkeletonVideoPyMethod.Invoke(src, dst);
