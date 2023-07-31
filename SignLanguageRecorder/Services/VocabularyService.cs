@@ -8,8 +8,6 @@ public class VocabularyService
 {
     private VocabularyInfo[] vocabularyInfos;
 
-    public VocabularyInfo[] VocabularyInfos => vocabularyInfos;
-
     private readonly DatabaseService databaseService;
 
     public VocabularyService(DatabaseService databaseService)
@@ -28,19 +26,16 @@ public class VocabularyService
         collection.Upsert(docs);
     }
 
-    public async void Test()
+    public async Task<VocabularyInfo[]> GetVocabularyInfos()
     {
-        await UpdateVocabularyInfos();
-        Console.WriteLine("1");
-    }
+        if (vocabularyInfos == null)
+        {
+            await Task.Yield();
+            using var db = databaseService.GetLiteDatabase();
+            var collection = db.GetCollection<VocabularyInfo>();
 
-    public async Task<VocabularyInfo[]> UpdateVocabularyInfos()
-    {
-        await Task.Yield();
-        using var db = databaseService.GetLiteDatabase();
-        var collection = db.GetCollection<VocabularyInfo>();
-
-        vocabularyInfos = collection.FindAll().ToArray();
+            vocabularyInfos = collection.FindAll().ToArray();
+        }
 
         return vocabularyInfos;
     }
