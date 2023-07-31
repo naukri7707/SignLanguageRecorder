@@ -79,4 +79,14 @@ public partial class ReplayPopup : Popup,
     {
         MediaPlayer.Handler?.DisconnectHandler();
     }
+
+    private void FileNamePicker_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        ViewModel.UpdateVideo();
+    }
+
+    private void ShowSkeletonCheckbox_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+        ViewModel.UpdateVideo();
+    }
 }

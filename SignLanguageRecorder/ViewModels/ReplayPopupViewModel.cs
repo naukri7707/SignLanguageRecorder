@@ -1,13 +1,10 @@
-﻿using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Views;
-using System.Diagnostics;
-
-namespace SignLanguageRecorder.ViewModels;
+﻿namespace SignLanguageRecorder.ViewModels;
 
 public partial class ReplayPopupViewModel : ObservableObject
 {
     public interface IRequirement
     {
+
     }
 
     private readonly IRequirement requirement;
@@ -18,63 +15,52 @@ public partial class ReplayPopupViewModel : ObservableObject
 
     private readonly JointsRecognizerService jointsRecognizerService;
 
-    public ObservableCollection<string> Cameras { get; set; }
+    public ObservableCollection<string> CameraNames { get; set; }
+
+    [ObservableProperty]
+    private bool isSkeletonShow;
 
     [ObservableProperty]
     private bool isBusy;
 
     [ObservableProperty]
-    private int selectedCameraIndex;
+    private string selectedCameraName;
 
-    public string SelectedCamera => SelectedCameraIndex >= 0 && SelectedCameraIndex < Cameras.Count
-        ? Cameras[SelectedCameraIndex]
-        : "None";
-
-    public string VideoName { get; set; }
+    public string SignName { get; set; }
 
     [ObservableProperty]
     private string mediaSource;
 
-    public string SourceVideoPath
-    {
-        get
-        {
-            var userFolder = preferencesService.UsersFolder;
-            var userName = preferencesService.UserName;
-            return Path.Combine(userFolder, userName, "Source", SelectedCamera, $"{VideoName}.mp4");
-        }
-    }
-
-    public string SkeletonVideoPath
-    {
-        get
-        {
-            var userFolder = preferencesService.UsersFolder;
-            var userName = preferencesService.UserName;
-            return Path.Combine(userFolder, userName, "Skeleton", SelectedCamera, $"{VideoName}.mp4");
-        }
-    }
-
-    public ReplayPopupViewModel(IRequirement requirement, string videoName) : this(
+    public ReplayPopupViewModel(IRequirement requirement, string signName) : this(
         requirement,
-        videoName,
+        signName,
         Dependency.Inject<DialogService>(),
         Dependency.Inject<PreferencesService>(),
         Dependency.Inject<JointsRecognizerService>()
         )
     { }
 
-    public ReplayPopupViewModel(IRequirement requirement, string videoName, DialogService dialogService, PreferencesService preferencesService, JointsRecognizerService jointsRecognizerService)
+    public ReplayPopupViewModel(IRequirement requirement, string signName, DialogService dialogService, PreferencesService preferencesService, JointsRecognizerService jointsRecognizerService)
     {
         this.requirement = requirement;
-        VideoName = videoName;
+        SignName = signName;
         this.dialogService = dialogService;
         this.preferencesService = preferencesService;
         this.jointsRecognizerService = jointsRecognizerService;
         //
-        Cameras = new ObservableCollection<string>(GetRecordedSignCameras());
+        var userFolder = preferencesService.UsersFolder;
+        var userName = preferencesService.UserName;
+        var folderPath = Path.Combine(userFolder, userName, "Source");
+        var files = Directory.GetFiles(folderPath, $"{signName}_*.mp4")
+            .Select(it =>
+            {
+                var fileName = Path.GetFileNameWithoutExtension(it);
+                var trueName = fileName.Replace($"{signName}_", null);
+                return trueName;
+            });
+        CameraNames = new ObservableCollection<string>(files);
+        SelectedCameraName = CameraNames.FirstOrDefault();
     }
-
 
     public IEnumerable<string> GetRecordedSignCameras()
     {
@@ -85,7 +71,7 @@ public partial class ReplayPopupViewModel : ObservableObject
 
         foreach (var camFolder in camFolderPaths)
         {
-            var targetFile = Path.Combine(camFolder, $"{VideoName}.mp4");
+            var targetFile = Path.Combine(camFolder, $"{SignName}.mp4");
             if (File.Exists(targetFile))
             {
                 var cam = Path.GetFileName(camFolder);
@@ -94,45 +80,56 @@ public partial class ReplayPopupViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    public void LoadSourceVideo()
+    public async void UpdateVideo()
     {
-        LoadVideo(SourceVideoPath);
-    }
+        var targetVideoName = GetVideoPath(SignName, SelectedCameraName, IsSkeletonShow);
 
-    [RelayCommand]
-    public async void LoadSkeletonVideo()
-    {
-        if (!File.Exists(SkeletonVideoPath))
+        if (!TryLoadVideo(targetVideoName))
         {
-            try
+            if (IsSkeletonShow)
             {
-                IsBusy = true;
-                var directoryPath = Path.GetDirectoryName(SkeletonVideoPath);
-                Directory.CreateDirectory(directoryPath);
-                await jointsRecognizerService.CreateSkeletonVideo(SourceVideoPath, SkeletonVideoPath);
-                LoadVideo(SkeletonVideoPath);
-                IsBusy = false;
-            }
-            catch (Exception ex)
-            {
-                if (ex is ServiceIsBusyException serviceBusyException)
+                try
                 {
-                    await dialogService.DisplayAlert("訊息", serviceBusyException.Message, "確認");
+                    var sourceVideo = GetVideoPath(SignName, SelectedCameraName, false);
+                    var skeletonVideo = GetVideoPath(SignName, SelectedCameraName, true);
+                    await Task.Yield();
+                    await jointsRecognizerService.CreateSkeletonVideo(sourceVideo, skeletonVideo);
+                    if (!TryLoadVideo(targetVideoName))
+                    {
+                        await dialogService.DisplayAlert("錯誤", $"無法載入影片\r\n{targetVideoName}", "確認");
+                    }
                 }
+                catch (Exception ex)
+                {
+                    await dialogService.DisplayAlert("錯誤", ex.Message, "確認");
+                }
+            }
+            else
+            {
+                await dialogService.DisplayAlert("錯誤", $"無法載入影片\r\n{targetVideoName}", "確認");
             }
         }
     }
 
-    public async void LoadVideo(string videoPath)
+    private string GetVideoPath(string signName, string cameraName, bool isSkeleton)
+    {
+        var userFolder = preferencesService.UsersFolder;
+        var userName = preferencesService.UserName;
+
+        return Path.Combine(
+            userFolder,
+            userName,
+            isSkeleton ? "Skeleton" : "Source",
+            $"{signName}_{cameraName}.mp4");
+    }
+
+    private bool TryLoadVideo(string videoPath)
     {
         if (File.Exists(videoPath))
         {
             MediaSource = videoPath;
+            return true;
         }
-        else
-        {
-            await dialogService.DisplayAlert("錯誤", $"找不到影片\r\n{videoPath}", "確認");
-        }
+        return false;
     }
 }
