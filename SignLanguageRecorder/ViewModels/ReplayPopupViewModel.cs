@@ -1,4 +1,6 @@
-﻿namespace SignLanguageRecorder.ViewModels;
+﻿using System.Text;
+
+namespace SignLanguageRecorder.ViewModels;
 
 public partial class ReplayPopupViewModel : ObservableObject
 {
@@ -76,6 +78,32 @@ public partial class ReplayPopupViewModel : ObservableObject
             {
                 var cam = Path.GetFileName(camFolder);
                 yield return cam;
+            }
+        }
+    }
+
+    [RelayCommand]
+    public async void DeleteReplay()
+    {
+        var userFolder = preferencesService.UsersFolder;
+        var userName = preferencesService.UserName;
+        var sourceFolderPath = Path.Combine(userFolder, userName, "Source");
+        var skeletonFolderPath = Path.Combine(userFolder, userName, "Skeleton");
+        var files = Directory.GetFiles(sourceFolderPath, $"{SignName}_*.mp4")
+            .Concat(Directory.GetFiles(skeletonFolderPath, $"{SignName}_*.mp4"))
+            .ToArray();
+
+        var sb = new StringBuilder();
+        foreach (var file in files)
+        {
+            sb.Append(file);
+        }
+
+        if (await dialogService.DisplayAlert($"是否刪除{files.Length}個影片?", sb.ToString(), "確認", "取消"))
+        {
+            foreach (var file in files)
+            {
+                File.Delete(file);
             }
         }
     }
