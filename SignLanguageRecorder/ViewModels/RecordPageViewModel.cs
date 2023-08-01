@@ -61,7 +61,7 @@ public partial class RecordPageViewModel : ObservableObject
         await Task.Yield();
 
         var vocabularyInfos = await vocabularyService.GetVocabularyInfos();
-        
+        VocabularyCards.Clear();
         foreach (var info in vocabularyInfos)
         {
             var card = new VocabularyCardViewModel
@@ -155,7 +155,7 @@ public partial class RecordPageViewModel : ObservableObject
                 {
                     if (recordService.DeleteLayout(targetDeleteLayout))
                     {
-                        await dialogService.DisplayAlert("完成", $"{targetDeleteLayout} 已", "確定");
+                        await dialogService.DisplayAlert("完成", $"{targetDeleteLayout} 已刪除", "確定");
                     }
                 }
                 break;

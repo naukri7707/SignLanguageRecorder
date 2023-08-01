@@ -13,8 +13,4 @@
         Title="Preferences"
         ContentTemplate="{DataTemplate p:PreferencesPage}"
         Route="Preferences" />
-    <ShellContent
-        Title="Debug"
-        ContentTemplate="{DataTemplate p:DebugPage}"
-        Route="Debug" />
 </Shell>

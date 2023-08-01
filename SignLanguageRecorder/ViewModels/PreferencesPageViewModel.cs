@@ -65,7 +65,16 @@ public partial class PreferencesPageViewModel : ObservableObject
         preferencesService.UsersFolder = requirement.UsersFolderEntry.Text;
         preferencesService.DemoFolder = requirement.DemoFolderEntry.Text;
         preferencesService.PythonFolder = requirement.PythonFolderEntry.Text;
+        CreateUserFolder();
         Application.Current.MainPage.DisplayAlert("完成", $"偏好設定已儲存", "OK");
+    }
+
+    private void CreateUserFolder()
+    {
+        var sourceFolder = Path.Combine(preferencesService.UserFolder, "Source");
+        var skeletonFolder = Path.Combine(preferencesService.UserFolder, "Skeleton");
+        Directory.CreateDirectory(sourceFolder);
+        Directory.CreateDirectory(skeletonFolder);
     }
 
     [RelayCommand]
