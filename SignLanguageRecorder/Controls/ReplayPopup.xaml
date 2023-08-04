@@ -10,7 +10,8 @@
     CanBeDismissedByTappingOutsideOfPopup="True"
     Closed="Popup_Closed"
     Size="1024,768"
-    Color="{StaticResource Dark_Surface}">
+    Color="{AppThemeBinding Light={StaticResource Light_Surface},
+                            Dark={StaticResource Dark_Surface}}">
     <VerticalStackLayout>
         <Grid ColumnDefinitions="*, auto">
             <Label
@@ -19,7 +20,8 @@
                 Text="我的重播" />
             <Button
                 Grid.Column="1"
-                BackgroundColor="{StaticResource Dark_ErrorContainer}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Light_ErrorContainer},
+                                                  Dark={StaticResource Dark_ErrorContainer}}"
                 Command="{Binding DeleteReplayCommand}"
                 Text="刪除重播" />
         </Grid>

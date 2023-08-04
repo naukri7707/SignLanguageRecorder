@@ -12,11 +12,13 @@
     Color="Transparent">
     <Border
         HorizontalOptions="Center"
-        Stroke="{StaticResource Dark_SurfaceContainer}"
+        Stroke="{AppThemeBinding Light={StaticResource Light_SurfaceContainer},
+                                 Dark={StaticResource Dark_SurfaceContainer}}"
         StrokeShape="RoundRectangle 10,10,10,10">
         <Grid
             Padding="10"
-            BackgroundColor="{StaticResource Dark_Surface}"
+            BackgroundColor="{AppThemeBinding Light={StaticResource Light_Surface},
+                                              Dark={StaticResource Dark_Surface}}"
             ColumnDefinitions="*,*"
             ColumnSpacing="5"
             RowDefinitions="auto,auto,auto,auto"
@@ -68,20 +70,24 @@
             <Button
                 Grid.Row="3"
                 Grid.Column="0"
-                BackgroundColor="{StaticResource Dark_PrimaryContainer}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Light_PrimaryContainer},
+                                                  Dark={StaticResource Dark_PrimaryContainer}}"
                 Clicked="SaveAndClose"
                 FontSize="16"
                 Text="確認"
-                TextColor="{StaticResource Dark_Primary}"
+                TextColor="{AppThemeBinding Light={StaticResource Light_Primary},
+                                            Dark={StaticResource Dark_Primary}}"
                 VerticalOptions="Center" />
             <Button
                 Grid.Row="3"
                 Grid.Column="1"
-                BackgroundColor="{StaticResource Dark_SecondaryContainer}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Light_SecondaryContainer},
+                                                  Dark={StaticResource Dark_SecondaryContainer}}"
                 Clicked="Close"
                 FontSize="16"
                 Text="取消"
-                TextColor="{StaticResource Dark_Secondary}"
+                TextColor="{AppThemeBinding Light={StaticResource Light_Secondary},
+                                            Dark={StaticResource Dark_Secondary}}"
                 VerticalOptions="Center" />
         </Grid>
     </Border>

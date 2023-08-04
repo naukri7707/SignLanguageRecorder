@@ -52,7 +52,7 @@ public partial class RecorderViewModel : ObservableObject
     public async Task<CameraResult> StartRecordAsync(string fileName)
     {
         var cameraView = requirement.CameraView;
-        var result = await cameraView.StartRecordingAsync(fileName, new Size(1920, 1080));
+        var result = await cameraView.StartRecordingAsync(fileName);
         return result;
     }
 
