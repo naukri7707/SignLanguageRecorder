@@ -21,17 +21,20 @@
             AbsoluteLayout.LayoutFlags="All" />
         <Label
             x:Name="RecorderNameLabel"
+            Margin="10,5,0,0"
             AbsoluteLayout.LayoutBounds="0, 0, AutoSize, AutoSize"
             AbsoluteLayout.LayoutFlags="PositionProportional"
             FontSize="Medium"
             IsEnabled="False"
             Opacity="0"
-            Text="{Binding RecorderName}" />
+            Text="{Binding RecorderName}"
+            TextColor="White" />
         <c:Icon
             x:Name="SettingButton"
-            Padding="0,0,5,5"
+            Margin="0,5,5,0"
             AbsoluteLayout.LayoutBounds="1, 0, AutoSize, AutoSize"
             AbsoluteLayout.LayoutFlags="PositionProportional"
+            IconColor="White"
             IconSize="Small"
             IsEnabled="False"
             Opacity="0"

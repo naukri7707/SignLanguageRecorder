@@ -11,7 +11,9 @@ public partial class VocabularyCardViewModel : INotifyPropertyChanged
 
     public string Name { get; set; }
 
-    public Color Color => IsCompleted ? Colors.Green : Colors.White;
+    public Color Color => IsCompleted ? Colors.Green : Application.Current.RequestedTheme == AppTheme.Dark 
+        ? Colors.White
+        : Colors.Black;
 
     public IconSymbol Symbol => IsCompleted ? IconSymbol.CheckBold : IconSymbol.CircleMedium;
    
