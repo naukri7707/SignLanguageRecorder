@@ -46,7 +46,7 @@
             <Grid Grid.Row="0" ColumnDefinitions="auto,*,auto,auto">
                 <Label
                     Grid.Column="0"
-                    FontSize="Large"
+                    FontSize="64"
                     Text="{Binding SelectedVocabularyCard.Name}"
                     VerticalOptions="Center"
                     VerticalTextAlignment="Center" />
