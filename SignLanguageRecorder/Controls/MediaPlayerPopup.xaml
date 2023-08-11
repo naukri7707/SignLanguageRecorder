@@ -27,7 +27,7 @@
             AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
             AbsoluteLayout.LayoutFlags="All"
             ShouldAutoPlay="True"
-            ShouldLoopPlayback="True"
+            ShouldLoopPlayback="False"
             ShouldShowPlaybackControls="False"
             Source="{Binding MediaSource}">
             <tk:MediaElement.GestureRecognizers>
