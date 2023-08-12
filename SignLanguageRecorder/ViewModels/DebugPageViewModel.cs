@@ -17,6 +17,7 @@ public partial class DebugPageViewModel : ObservableObject
     {
         var voc = Dependency.Inject<VocabularyService>();
         var pre = Dependency.Inject<PreferencesService>();
+        var dialog = Dependency.Inject<DialogService>();
         var infos = await voc.GetVocabularyInfos();
         var list = new List<string>();
         var sb = new StringBuilder();
@@ -29,9 +30,15 @@ public partial class DebugPageViewModel : ObservableObject
                 sb.Append(path);
             }
         }
-        var b = list.ToArray();
 
-        Debug.WriteLine(sb.ToString());
+        if (list.Count > 0)
+        {
+            await dialog.DisplayAlert("錯誤", $"找不到以下影片：\r\n{string.Join("\r\n", list)}", "確認");
+        }
+        else
+        {
+            await dialog.DisplayAlert("完成", $"驗證成功", "確認");
+        }
     }
 
     public interface IRequirement
