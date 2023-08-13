@@ -7,17 +7,23 @@ public partial class VocabularyCardViewModel : INotifyPropertyChanged
 {
     private readonly PreferencesService preferencesService;
 
+    private bool isCompleted;
+
+    public VocabularyCardViewModel() : this(
+        Dependency.Inject<PreferencesService>()
+                                           )
+    { }
+
+    public VocabularyCardViewModel(PreferencesService preferencesService)
+    {
+        this.preferencesService = preferencesService;
+    }
+
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public string Name { get; set; }
-
-    public Color Color => IsCompleted ? Colors.Green : Application.Current.RequestedTheme == AppTheme.Dark 
+    public Color Color => IsCompleted ? Colors.Green : Application.Current.RequestedTheme == AppTheme.Dark
         ? Colors.White
         : Colors.Black;
-
-    public IconSymbol Symbol => IsCompleted ? IconSymbol.CheckBold : IconSymbol.CircleMedium;
-   
-    private bool isCompleted;
 
     public bool IsCompleted
     {
@@ -34,17 +40,15 @@ public partial class VocabularyCardViewModel : INotifyPropertyChanged
         }
     }
 
-
     public bool IsNotCompleted => !IsCompleted;
 
-    public VocabularyCardViewModel() : this(
-        Dependency.Inject<PreferencesService>()
-        )
-    { }
+    public string Name { get; set; }
 
-    public VocabularyCardViewModel(PreferencesService preferencesService)
+    public IconSymbol Symbol => IsCompleted ? IconSymbol.CheckBold : IconSymbol.CircleMedium;
+
+    public void OnPropertyChanged([CallerMemberName] string name = null)
     {
-        this.preferencesService = preferencesService;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     public void UpdateCompletion()
@@ -52,12 +56,11 @@ public partial class VocabularyCardViewModel : INotifyPropertyChanged
         var userFolder = preferencesService.UsersFolder;
         var userName = preferencesService.UserName;
         var folderPath = Path.Combine(userFolder, userName, "Source");
-        var files = Directory.GetFiles(folderPath, $"{Name}_*.mp4");
-        IsCompleted = files.Length > 0;
-    }
 
-    public void OnPropertyChanged([CallerMemberName] string name = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        if (Directory.Exists(folderPath))
+        {
+            var files = Directory.GetFiles(folderPath, $"{Name}_*.mp4");
+            IsCompleted = files.Length > 0;
+        }
     }
 }
