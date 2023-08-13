@@ -12,15 +12,19 @@ public partial class CountDownPopupViewModel : ObservableObject
 
     private readonly IRequirement requirement;
 
+
+    [ObservableProperty]
+    public int timePerCount = 500;
+
     [ObservableProperty]
     public int countDown;
 
     public event Action OnCompleted = () => { };
 
-    public CountDownPopupViewModel(IRequirement requirement, int seconds)
+    public CountDownPopupViewModel(IRequirement requirement, int countDown)
     {
         this.requirement = requirement;
-        CountDown = seconds;
+        CountDown = countDown;
         _ = StartCountDown();
     }
 
@@ -28,7 +32,7 @@ public partial class CountDownPopupViewModel : ObservableObject
     {
         while (CountDown > 0)
         {
-            await Task.Delay(1000);
+            await Task.Delay(TimePerCount);
             CountDown--;
         }
         OnCompleted.Invoke();
