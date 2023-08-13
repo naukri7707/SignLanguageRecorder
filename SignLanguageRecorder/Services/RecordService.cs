@@ -80,12 +80,9 @@ public class RecordService
         }
     }
 
-    public async void StartRecording(string videoName)
+    public async Task<bool> PromptForOverwriteIfFileExists(string videoName)
     {
-        await Task.Yield();
-
         var recorders = Recorders.Take(ActivedRecorderCount).ToArray();
-        var anyError = false;
 
         var userFolder = preferencesService.UsersFolder;
         var userName = preferencesService.UserName;
@@ -111,10 +108,25 @@ public class RecordService
         {
             existedList.Length--;
             var overrideFile = await dialogService.DisplayAlert("偵測到檔案已存在，是否覆寫？", existedList.ToString(), "是", "否");
-            if (!overrideFile)
-            {
-                return;
-            }
+
+            return overrideFile;
+        }
+        return true;
+    }
+
+    public async void StartRecording(string videoName)
+    {
+        await Task.Yield();
+
+        var recorders = Recorders.Take(ActivedRecorderCount).ToArray();
+        var anyError = false;
+
+        var userFolder = preferencesService.UsersFolder;
+        var userName = preferencesService.UserName;
+        var folderPath = Path.Combine(userFolder, userName, "Source");
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
         }
 
         // 開始錄製

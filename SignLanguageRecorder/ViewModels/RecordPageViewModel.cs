@@ -2,32 +2,21 @@
 
 public partial class RecordPageViewModel : ObservableObject
 {
-    public interface IRequirement
-    {
-        public Grid RecorderContainer { get; }
-    }
-
-    private readonly IRequirement requirement;
+    private readonly DialogService dialogService;
 
     private readonly PreferencesService preferencesService;
 
-    private readonly DialogService dialogService;
+    private readonly RecordService recordService;
+
+    private readonly IRequirement requirement;
 
     private readonly VocabularyService vocabularyService;
-
-    private readonly RecordService recordService;
 
     [ObservableProperty]
     private bool isRecording;
 
-    public ObservableCollection<VocabularyCardViewModel> VocabularyCards { get; } = new();
-
     [ObservableProperty]
     private VocabularyCardViewModel selectedVocabularyCard;
-
-    public event Action LayoutChanged = () => { };
-
-    public int ActivedRecorderCount => recordService.ActivedRecorderCount;
 
     public RecordPageViewModel(IRequirement requirement) : this(
         requirement,
@@ -56,6 +45,17 @@ public partial class RecordPageViewModel : ObservableObject
         };
     }
 
+    public int ActivedRecorderCount => recordService.ActivedRecorderCount;
+
+    public ObservableCollection<VocabularyCardViewModel> VocabularyCards { get; } = new();
+
+    public event Action LayoutChanged = () => { };
+
+    public bool DeleteLayout(string layoutName)
+    {
+        return recordService.DeleteLayout(layoutName);
+    }
+
     public async Task GetVocabularies()
     {
         await Task.Yield();
@@ -74,11 +74,33 @@ public partial class RecordPageViewModel : ObservableObject
 
         SelectedVocabularyCard = VocabularyCards.FirstOrDefault();
     }
-    
+
+    public bool LoadLayout(string layoutName)
+    {
+        return recordService.LoadLayout(layoutName);
+    }
+
+    public void OpenSavedataFolder()
+    {
+        string folderPath = FileSystem.AppDataDirectory;
+        System.Diagnostics.Process.Start("explorer.exe", folderPath);
+    }
+
     public void Record()
     {
         var name = SelectedVocabularyCard.Name;
         recordService.StartRecording(name);
+    }
+
+    public async Task<bool> PromptForOverwriteIfFileExists()
+    {
+        var name = SelectedVocabularyCard.Name;
+        return await recordService.PromptForOverwriteIfFileExists(name);
+    }
+
+    public void SaveLayout(string layoutName)
+    {
+        recordService.SaveLayout(layoutName);
     }
 
     public void Stop()
@@ -87,8 +109,21 @@ public partial class RecordPageViewModel : ObservableObject
         recordService.StopRecording();
     }
 
+    public bool TrySetActivedRecorderCount(int recorderCount)
+    {
+        try
+        {
+            recordService.ActivedRecorderCount = recorderCount;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     [RelayCommand]
-    private async void MenuButton_Tapped()
+    private async Task MenuButton_Tapped()
     {
         Task<string> DisplayLayoutPicker()
         {
@@ -128,6 +163,7 @@ public partial class RecordPageViewModel : ObservableObject
                 }
 
                 break;
+
             case "載入佈局":
                 var targetLoadLayout = await DisplayLayoutPicker();
                 // 沒有取消時
@@ -139,6 +175,7 @@ public partial class RecordPageViewModel : ObservableObject
                     }
                 }
                 break;
+
             case "儲存佈局":
                 var layoutName = await dialogService.DisplayPromptAsync("儲存佈局", "佈局名稱", "確定", "取消", "佈局名稱", -1, Keyboard.Text);
 
@@ -148,6 +185,7 @@ public partial class RecordPageViewModel : ObservableObject
                     recordService.SaveLayout(layoutName);
                 }
                 break;
+
             case "刪除佈局":
                 var targetDeleteLayout = await DisplayLayoutPicker();
                 // 沒有取消時
@@ -159,47 +197,18 @@ public partial class RecordPageViewModel : ObservableObject
                     }
                 }
                 break;
+
             case "開啟儲存位置":
                 OpenSavedataFolder();
                 break;
+
             default:
                 break;
         }
     }
 
-    public bool TrySetActivedRecorderCount(int recorderCount)
+    public interface IRequirement
     {
-        try
-        {
-            recordService.ActivedRecorderCount = recorderCount;
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    public void OpenSavedataFolder()
-    {
-        string folderPath = FileSystem.AppDataDirectory;
-        System.Diagnostics.Process.Start("explorer.exe", folderPath);
-    }
-
-    public void SaveLayout(string layoutName)
-    {
-        recordService.SaveLayout(layoutName);
-    }
-
-    public bool LoadLayout(string layoutName)
-    {
-        return recordService.LoadLayout(layoutName);
-    }
-
-
-    public bool DeleteLayout(string layoutName)
-    {
-        return recordService.DeleteLayout(layoutName);
+        public Grid RecorderContainer { get; }
     }
 }
-

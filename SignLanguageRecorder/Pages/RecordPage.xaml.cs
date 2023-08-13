@@ -6,8 +6,6 @@ public partial class RecordPage : ContentPage,
     IWithViewModel<RecordPageViewModel>,
     RecordPageViewModel.IRequirement
 {
-    public RecordPageViewModel ViewModel => BindingContext as RecordPageViewModel;
-
     public RecordPage()
     {
         InitializeComponent();
@@ -15,82 +13,9 @@ public partial class RecordPage : ContentPage,
         ViewModel.LayoutChanged += RefreshRecorders;
     }
 
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        await ViewModel.GetVocabularies();
-    }
+    public RecordPageViewModel ViewModel => BindingContext as RecordPageViewModel;
 
-    private async void WatchReplayButton_Clicked(object sender, EventArgs e)
-    {
-        var videoName = ViewModel.SelectedVocabularyCard.Name;
-        var replayPopup = new ReplayPopup(videoName);
-        var result = await this.ShowPopupAsync(replayPopup);
-        ViewModel.SelectedVocabularyCard.UpdateCompletion();
-    }
-
-    private async void WatchDemoButton_Clicked(object sender, EventArgs e)
-    {
-        var demoPopup = new MediaPlayerPopup();
-        var videoName = ViewModel.SelectedVocabularyCard.Name;
-        demoPopup.ViewModel.LoadDemo(videoName);
-        var result = await this.ShowPopupAsync(demoPopup);
-    }
-
-    private async void RecordButton_Clicked(object sender, EventArgs e)
-    {
-        if (ViewModel.IsRecording)
-        {
-            ViewModel.Stop();
-        }
-        else
-        {
-            var countDownPopup = new CountDownPopup(3);
-            var result = await this.ShowPopupAsync(countDownPopup);
-            ViewModel.Record();
-        }
-    }
-
-    private void RecorderContainer_SizeChanged(object sender, EventArgs e)
-    {
-        RefreshRecorders();
-    }
-
-    private int CalculateColumnCount(int camCount)
-    {
-        var sqrt = Math.Sqrt(camCount);
-        var result = (int)Math.Ceiling(sqrt);
-        return result;
-    }
-
-    private int CalculateRowCount(int camCount)
-    {
-        var columnCount = CalculateColumnCount(camCount);
-
-        return (columnCount != 0) switch
-        {
-            true => (camCount / columnCount) + (camCount % columnCount != 0 ? 1 : 0),
-            false => 0
-        };
-    }
-
-    private ColumnDefinitionCollection CalculateColumnDefinitionsOfRecorderContainer(int columnCount)
-    {
-        var def = Enumerable
-            .Range(0, columnCount)
-            .Select(it => new ColumnDefinition(GridLength.Star))
-            .ToArray();
-        return new ColumnDefinitionCollection(def);
-    }
-
-    private RowDefinitionCollection CalculateRowDefinitionsOfRecorderContainer(int rowCount)
-    {
-        var def = Enumerable
-            .Range(0, rowCount)
-            .Select(it => new RowDefinition(GridLength.Star))
-            .ToArray();
-        return new RowDefinitionCollection(def);
-    }
+    Grid RecordPageViewModel.IRequirement.RecorderContainer => RecorderContainer;
 
     public void RefreshRecorders()
     {
@@ -156,5 +81,85 @@ public partial class RecordPage : ContentPage,
         }
     }
 
-    Grid RecordPageViewModel.IRequirement.RecorderContainer => RecorderContainer;
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await ViewModel.GetVocabularies();
+    }
+
+    private int CalculateColumnCount(int camCount)
+    {
+        var sqrt = Math.Sqrt(camCount);
+        var result = (int)Math.Ceiling(sqrt);
+        return result;
+    }
+
+    private ColumnDefinitionCollection CalculateColumnDefinitionsOfRecorderContainer(int columnCount)
+    {
+        var def = Enumerable
+            .Range(0, columnCount)
+            .Select(it => new ColumnDefinition(GridLength.Star))
+            .ToArray();
+        return new ColumnDefinitionCollection(def);
+    }
+
+    private int CalculateRowCount(int camCount)
+    {
+        var columnCount = CalculateColumnCount(camCount);
+
+        return (columnCount != 0) switch
+        {
+            true => (camCount / columnCount) + (camCount % columnCount != 0 ? 1 : 0),
+            false => 0
+        };
+    }
+
+    private RowDefinitionCollection CalculateRowDefinitionsOfRecorderContainer(int rowCount)
+    {
+        var def = Enumerable
+            .Range(0, rowCount)
+            .Select(it => new RowDefinition(GridLength.Star))
+            .ToArray();
+        return new RowDefinitionCollection(def);
+    }
+
+    private async void RecordButton_Clicked(object sender, EventArgs e)
+    {
+        if (ViewModel.IsRecording)
+        {
+            ViewModel.Stop();
+        }
+        else
+        {
+            var wirte = await ViewModel.PromptForOverwriteIfFileExists();
+            
+            if(wirte)
+            {
+                var countDownPopup = new CountDownPopup(3);
+                var result = await this.ShowPopupAsync(countDownPopup);
+                ViewModel.Record();
+            }
+        }
+    }
+
+    private void RecorderContainer_SizeChanged(object sender, EventArgs e)
+    {
+        RefreshRecorders();
+    }
+
+    private async void WatchDemoButton_Clicked(object sender, EventArgs e)
+    {
+        var demoPopup = new MediaPlayerPopup();
+        var videoName = ViewModel.SelectedVocabularyCard.Name;
+        demoPopup.ViewModel.LoadDemo(videoName);
+        var result = await this.ShowPopupAsync(demoPopup);
+    }
+
+    private async void WatchReplayButton_Clicked(object sender, EventArgs e)
+    {
+        var videoName = ViewModel.SelectedVocabularyCard.Name;
+        var replayPopup = new ReplayPopup(videoName);
+        var result = await this.ShowPopupAsync(replayPopup);
+        ViewModel.SelectedVocabularyCard.UpdateCompletion();
+    }
 }
