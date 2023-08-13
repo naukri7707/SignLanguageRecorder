@@ -12,7 +12,7 @@ public partial class App : Application
 
     protected override void OnStart()
     {
-        _ = InitializeServiceAsync();
+        // _ = InitializeServiceAsync();
     }
 
     private async Task InitializeServiceAsync()
