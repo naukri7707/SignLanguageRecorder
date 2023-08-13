@@ -6,31 +6,26 @@ namespace SignLanguageRecorder.ViewModels;
 
 public partial class PreferencesPageViewModel : ObservableObject
 {
-    // Todo: 用 Entry+Picker 製作成 Control 後改用 DataBinding 處理資料
-    public interface IRequirement
-    {
-        Entry UserNameEntry { get; }
-        Entry UsersFolderEntry { get; }
-        Entry DemoFolderEntry { get; }
-        Entry PythonFolderEntry { get; }
-    }
-
-    private readonly IRequirement requirement;
+    private readonly DialogService dialogService;
 
     private readonly PreferencesService preferencesService;
+
+    private readonly IRequirement requirement;
 
     private readonly VocabularyService vocabularyService;
 
     public PreferencesPageViewModel(IRequirement requirement) : this(
-        requirement,
-        Dependency.Inject<PreferencesService>(),
-        Dependency.Inject<VocabularyService>()
-        )
+            requirement,
+            Dependency.Inject<DialogService>(),
+            Dependency.Inject<PreferencesService>(),
+            Dependency.Inject<VocabularyService>()
+            )
     { }
 
-    public PreferencesPageViewModel(IRequirement requirement, PreferencesService preferencesService, VocabularyService vocabularyService)
+    public PreferencesPageViewModel(IRequirement requirement, DialogService dialogService, PreferencesService preferencesService, VocabularyService vocabularyService)
     {
         this.requirement = requirement;
+        this.dialogService = dialogService;
         this.preferencesService = preferencesService;
         this.vocabularyService = vocabularyService;
         //
@@ -41,7 +36,33 @@ public partial class PreferencesPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async void OpenFolderPicker(InputView input)
+    public void DropVocabularyInfos()
+    {
+        vocabularyService.Drop();
+    }
+
+    [RelayCommand]
+    public async void DumpVocabularyInfos()
+    {
+        var ct = new CancellationToken();
+        var result = await FolderPicker.Default.PickAsync(ct);
+        if (result.IsSuccessful)
+        {
+            var path = Path.Combine(result.Folder.Path, "data.json");
+            vocabularyService.Dump(path);
+        }
+    }
+
+    [RelayCommand]
+    public async Task LoadVocabularyInfos()
+    {
+        var result = await FilePicker.Default.PickAsync();
+        var dataCount = await vocabularyService.AddVocabularyFromJsonFileAsync(result.FullPath);
+        await dialogService.DisplayAlert("完成", $"共匯入 {dataCount} 筆資料", "確認");
+    }
+
+    [RelayCommand]
+    public async Task OpenFolderPicker(InputView input)
     {
         var ct = new CancellationToken();
         var result = await FolderPicker.Default.PickAsync(ct);
@@ -77,28 +98,15 @@ public partial class PreferencesPageViewModel : ObservableObject
         Directory.CreateDirectory(skeletonFolder);
     }
 
-    [RelayCommand]
-    public async void LoadVocabularyInfos()
+    // Todo: 用 Entry+Picker 製作成 Control 後改用 DataBinding 處理資料
+    public interface IRequirement
     {
-        var result = await FilePicker.Default.PickAsync();
-        vocabularyService.AddVocabularyFromJsonFile(result.FullPath);
-    }
+        Entry DemoFolderEntry { get; }
 
-    [RelayCommand]
-    public async void DumpVocabularyInfos()
-    {
-        var ct = new CancellationToken();
-        var result = await FolderPicker.Default.PickAsync(ct);
-        if (result.IsSuccessful)
-        {
-            var path = Path.Combine(result.Folder.Path, "data.json");
-            vocabularyService.Dump(path);
-        }
-    }
+        Entry PythonFolderEntry { get; }
 
-    [RelayCommand]
-    public void DropVocabularyInfos()
-    {
-        vocabularyService.Drop();
+        Entry UserNameEntry { get; }
+
+        Entry UsersFolderEntry { get; }
     }
 }
